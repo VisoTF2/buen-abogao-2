@@ -1220,10 +1220,10 @@ body.oscuro .modal-close:hover {
     }
 
     .materia-color-input {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      border: none;
+      border: 1px solid var(--border);
       padding: 0;
       cursor: pointer;
       background: none;
@@ -1232,7 +1232,7 @@ body.oscuro .modal-close:hover {
     }
 
     .materia-color-input::-webkit-color-swatch-wrapper {
-      padding: 0;
+      padding: 3px;
       border-radius: 50%;
     }
 
