@@ -18,6 +18,7 @@ const appRoot = document.getElementById("appRoot")
 const documentoInput = document.getElementById("documentoInput")
 const listaDocumentos = document.getElementById("listaDocumentos")
 const visorDocumentos = document.getElementById("visorDocumentos")
+const contenedorArticulosPrincipal = document.getElementById("contenidoArticulos")
 const modalCarpeta = document.getElementById("modalCarpeta")
 const modalCarpetaTitulo = document.getElementById("modalCarpetaTitulo")
 const inputNombreCarpeta = document.getElementById("inputNombreCarpeta")
@@ -79,6 +80,52 @@ if (botonDocumentos) {
     const archivo = e.dataTransfer?.files?.[0]
     if (archivo) procesarDocumento(archivo)
   })
+}
+
+function manejarReordenArticulos(e) {
+  if (!articuloArrastradoId) return
+
+  const contenedor = e.currentTarget
+  if (!(contenedor instanceof HTMLElement)) return
+
+  const articulosEnDom = Array.from(contenedor.querySelectorAll(".articulo"))
+  if (!articulosEnDom.length) return
+
+  e.preventDefault()
+  if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
+
+  const arrastrandoElem = contenedor.querySelector(
+    `.articulo[data-id="${articuloArrastradoId}"]`
+  )
+
+  if (!arrastrandoElem) return
+
+  const objetivoDespues = articulosEnDom
+    .filter(el => el.dataset.id !== articuloArrastradoId)
+    .reduce(
+      (cercano, el) => {
+        const rect = el.getBoundingClientRect()
+        const offset = e.clientY - (rect.top + rect.height / 2)
+
+        if (offset < 0 && offset > cercano.offset) {
+          return { offset, elemento: el }
+        }
+
+        return cercano
+      },
+      { offset: Number.NEGATIVE_INFINITY, elemento: null }
+    ).elemento
+
+  if (!objetivoDespues) {
+    contenedor.insertBefore(arrastrandoElem, articulosEnDom[0])
+  } else {
+    contenedor.insertBefore(arrastrandoElem, objetivoDespues.nextSibling)
+  }
+}
+
+if (contenedorArticulosPrincipal) {
+  contenedorArticulosPrincipal.addEventListener("dragover", manejarReordenArticulos)
+  contenedorArticulosPrincipal.addEventListener("drop", manejarReordenArticulos)
 }
 
 modalCarpetaGuardar?.addEventListener("click", confirmarCarpeta)
@@ -876,22 +923,6 @@ function activarArrastreArticulo(box, normativa, materia) {
 
     const objetivo = e.currentTarget
     if (!articuloArrastradoId || objetivo.dataset.id === articuloArrastradoId) return
-
-    const rect = objetivo.getBoundingClientRect()
-    const moverDespues = e.clientY >= rect.top + rect.height / 2
-
-    const contenedor = objetivo.parentElement
-    const arrastrandoElem = contenedor.querySelector(
-      `.articulo[data-id="${articuloArrastradoId}"]`
-    )
-
-    if (!arrastrandoElem || arrastrandoElem === objetivo) return
-
-    if (moverDespues) {
-      contenedor.insertBefore(arrastrandoElem, objetivo.nextSibling)
-    } else {
-      contenedor.insertBefore(arrastrandoElem, objetivo)
-    }
   })
 
   box.addEventListener("drop", e => {
