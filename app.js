@@ -1586,7 +1586,12 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     lista.addEventListener("drop", e => {
       if (!materiaArrastrada || !materiaArrastradaNormativa) return
       e.preventDefault()
+      e.stopPropagation()
       lista.classList.remove("carpetaLista-drop")
+
+      const esMismaCarpeta = materiaArrastradaCarpetaId === String(carpeta.id)
+      if (esMismaCarpeta) return
+
       moverMateriaACarpeta(materiaArrastradaNormativa, materiaArrastrada, carpeta.id)
     })
 
