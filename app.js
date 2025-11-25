@@ -460,15 +460,27 @@ function moverMateriaAFueraDeCarpeta(materia, normativa) {
   if (cambio) ordenarYMostrar()
 }
 
-function aplicarOrdenMateriasDesdeDOM(lista, normativa) {
+function aplicarOrdenMateriasDesdeDOM(lista) {
   if (!lista) return
   const items = Array.from(lista.querySelectorAll(".sidebarItem"))
   if (!items.length) return
 
-  if (!materiasOrden[normativa]) materiasOrden[normativa] = {}
+  const ordenPorNormativa = new Map()
 
-  items.forEach((item, index) => {
-    materiasOrden[normativa][item.dataset.materia] = index + 1
+  items.forEach(item => {
+    const normativa = item.dataset.normativa
+    const materia = item.dataset.materia
+    if (!normativa || !materia) return
+
+    if (!ordenPorNormativa.has(normativa)) ordenPorNormativa.set(normativa, [])
+    ordenPorNormativa.get(normativa).push(materia)
+  })
+
+  ordenPorNormativa.forEach((materias, normativa) => {
+    if (!materiasOrden[normativa]) materiasOrden[normativa] = {}
+    materias.forEach((materia, index) => {
+      materiasOrden[normativa][materia] = index + 1
+    })
   })
 
   guardarOrdenMaterias()
@@ -795,8 +807,9 @@ function activarArrastreMateria(item, lista, normativa) {
       return
     }
 
+    const normativaArrastre = materiaArrastradaNormativa || normativa
     const arrastrandoElem = lista.querySelector(
-      `.sidebarItem[data-materia="${materiaArrastrada}"][data-normativa="${normativa}"]`
+      `.sidebarItem[data-materia="${materiaArrastrada}"][data-normativa="${normativaArrastre}"]`
     )
 
     if (!arrastrandoElem || arrastrandoElem === item) return
@@ -812,7 +825,7 @@ function activarArrastreMateria(item, lista, normativa) {
 
   item.addEventListener("dragend", () => {
     item.classList.remove("arrastrando")
-    aplicarOrdenMateriasDesdeDOM(lista, normativa)
+    aplicarOrdenMateriasDesdeDOM(lista)
     materiaArrastrada = null
     materiaArrastradaNormativa = null
     materiaArrastradaCarpetaId = null
