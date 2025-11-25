@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buen abogao</title>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="app-root" id="appRoot">
+  <div class="zoom-canvas">
+  <header>
+    Buen abogao <br>
+    <button class="modo" onclick="toggleModo()">Modo oscuro</button>
+  </header>
+
+  <div class="container">
+
+    <div class="layout">
+      <div class="sidebarMaterias" id="sidebarMaterias"></div>
+
+      <div class="mainPanel">
+        <div class="form-articulo" style="position: relative;">
+          <h2>Agregar Artículo</h2>
+
+          <div class="barra-superior" aria-label="Acciones rápidas">
+            <div aria-label="Controles de zoom">
+              <button
+                class="zoom-btn"
+                type="button"
+                onclick="aplicarZoom(zoomActual + ZOOM_STEP)"
+                aria-label="Aumentar zoom"
+                title="Aumentar zoom"
+              >
+                +
+              </button>
+              <button
+                class="zoom-btn"
+                type="button"
+                onclick="aplicarZoom(zoomActual - ZOOM_STEP)"
+                aria-label="Disminuir zoom"
+                title="Disminuir zoom"
+              >
+                −
+              </button>
+            </div>
+
+            <button
+              class="buscador-btn"
+              onclick="abrirBuscador()"
+              aria-label="Abrir buscador"
+              title="Buscar (Ctrl+F o F3)"
+            >
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z" stroke-width="2" stroke-linecap="round" />
+                <path d="M15 15l4 4" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <span>Buscar</span>
+            </button>
+          </div>
+
+          <div class="buscador-flotante" id="buscadorFlotante" role="search">
+            <div class="buscador-campo">
+              <svg class="buscador-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M10.5 4.5a6 6 0 1 1 0 12 6 6 0 0 1 0-12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                <path d="M15 15l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+              <input
+                type="text"
+                id="buscadorInput"
+                class="buscador-input"
+                placeholder="Buscar en materias y artículos"
+              >
+            </div>
+            <div class="buscador-info" id="buscadorInfo">Usa Enter para saltar al siguiente</div>
+            <button class="buscador-cerrar" onclick="cerrarBuscador()" aria-label="Cerrar buscador">✕</button>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label>Seleccionar normativa</label>
+              <select id="normativa">
+                <option value="civil">Código Civil</option>
+                <option value="penal">Código Penal</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Número del Artículo</label>
+              <input type="number" id="numeroArticulo" placeholder="Ejemplo: 128">
+            </div>
+
+            <div>
+              <label>Materia</label>
+              <input type="text" id="materiaArticulo" placeholder="Ejemplo: Sucesión">
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="agregarArticulo()">Agregar Artículo</button>
+          <div id="errorBox"></div>
+        </div>
+
+        <div class="contenidoArticulos" id="contenidoArticulos"></div>
+
+        <div class="documentos-panel">
+          <div class="documentos-head">
+            <div class="documentos-title">
+              <h3>Subir documentos</h3>
+              <span>Adjunta archivos PDF o Word y visualízalos sin salir de la página.</span>
+            </div>
+            <div class="documentos-acciones">
+              <input
+                type="file"
+                id="documentoInput"
+                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                hidden
+              >
+              <button class="documentos-btn" onclick="document.getElementById('documentoInput').click()" type="button">
+                Seleccionar archivo
+              </button>
+              <div class="documentos-hint">Puedes arrastrar el archivo sobre el botón o tocar para elegir.</div>
+            </div>
+          </div>
+
+          <div class="documentos-body">
+            <div class="documentos-lista" id="listaDocumentos">
+              <div class="documentos-vacio">Aún no hay documentos cargados.</div>
+            </div>
+            <div class="documentos-preview" id="visorDocumentos">
+              <h4>Vista previa</h4>
+              <div class="documentos-vacio">Selecciona un documento para verlo aquí mismo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="donaciones" aria-label="Botón de donaciones">
+    <script
+      type="text/javascript"
+      src="https://cdn.tecito.app/static/js/button.v1.3.js"
+      data-name="bmc-button"
+      data-slug="buenabogao"
+      data-color="#3b82f6"
+      data-emoji=""
+      data-font="Cookie"
+      data-text="Invitame un tecito"
+      data-outline-color="#000"
+      data-font-color="#FFF"
+      data-tecito-color="#FFF"
+    ></script>
+  </div>
+
+  </div>
+
+  </div>
+
+  </div>
+
+  <div class="modal-backdrop" id="modalCarpeta" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div class="modal-title-wrap">
+          <p class="modal-kicker">Carpeta</p>
+          <h3 id="modalCarpetaTitulo">Nueva carpeta</h3>
+        </div>
+        <button class="modal-close" type="button" aria-label="Cerrar" onclick="cerrarModalCarpeta()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <label for="inputNombreCarpeta">Nombre</label>
+        <input type="text" id="inputNombreCarpeta" placeholder="Ejemplo: Culpabilidad">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-primary" id="modalCarpetaGuardar">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
