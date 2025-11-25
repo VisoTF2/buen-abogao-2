@@ -818,6 +818,7 @@
 
 .carpetaBox {
   --carpeta-slot-height: 0px;
+  --carpeta-color: var(--accent);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 8px 9px 5px;
@@ -844,7 +845,7 @@
 .carpetaToggle {
   border: 1px solid var(--border);
   background: var(--card);
-  color: var(--accent);
+  color: var(--carpeta-color);
   border-radius: 8px;
   width: 32px;
   height: 32px;
@@ -877,12 +878,41 @@
 .carpetaNombre {
   background: transparent;
   border: none;
-  color: var(--accent);
+  color: var(--carpeta-color);
   font-weight: 700;
   font-size: 15px;
   cursor: pointer;
   text-align: left;
   flex: 1;
+}
+
+
+.carpetaActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.carpeta-color-input {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.carpeta-color-input::-webkit-color-swatch-wrapper {
+  padding: 3px;
+  border-radius: 50%;
+}
+
+.carpeta-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
 }
 
 

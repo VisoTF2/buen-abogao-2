@@ -3,7 +3,9 @@ let codigoActual = {}
 let articulos = JSON.parse(localStorage.getItem("articulosGuardados") || "[]")
   .map(a => ({ ...a, contenidoHTML: a.contenidoHTML ?? null }))
 let materiasOrden = JSON.parse(localStorage.getItem("materiasOrden") || "{}")
-let carpetas = JSON.parse(localStorage.getItem("carpetasMaterias") || "[]")
+let carpetas = JSON.parse(localStorage.getItem("carpetasMaterias") || "[]").map(
+  c => ({ ...c, color: c.color || "#1e3a8a" })
+)
 let normativaSeleccionada = null
 let materiaSeleccionada = null
 let resultadosBusqueda = []
@@ -1541,10 +1543,14 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
   }
 
   carpetas.forEach(carpeta => {
+    const colorCarpeta = carpeta.color || "#1e3a8a"
+
     const card = document.createElement("div")
     card.className = "carpetaBox"
     card.dataset.carpetaId = carpeta.id
     if (carpeta.colapsada) card.classList.add("carpeta-colapsada")
+    card.style.setProperty("--carpeta-color", colorCarpeta)
+    card.style.borderColor = colorCarpeta
 
     const header = document.createElement("div")
     header.className = "carpetaHeader"
@@ -1567,12 +1573,33 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     toggleBtn.appendChild(toggleIcon)
     if (carpeta.colapsada) toggleBtn.classList.add("colapsada")
     toggleBtn.addEventListener("click", () => toggleCarpetaColapsada(carpeta.id))
+    toggleBtn.style.color = colorCarpeta
 
     const nombreBtn = document.createElement("button")
     nombreBtn.className = "carpetaNombre"
     nombreBtn.type = "button"
     nombreBtn.textContent = carpeta.nombre || "Carpeta sin título"
     nombreBtn.addEventListener("click", () => abrirModalCarpeta(carpeta.id))
+    nombreBtn.style.color = colorCarpeta
+
+    const acciones = document.createElement("div")
+    acciones.className = "carpetaActions"
+
+    const colorInput = document.createElement("input")
+    colorInput.type = "color"
+    colorInput.className = "carpeta-color-input"
+    colorInput.value = colorCarpeta
+    colorInput.addEventListener("click", e => e.stopPropagation())
+    colorInput.addEventListener("input", () => {
+      card.style.setProperty("--carpeta-color", colorInput.value)
+      card.style.borderColor = colorInput.value
+    })
+    colorInput.addEventListener("change", () => {
+      const nuevoColor = colorInput.value
+      carpetas = carpetas.map(c => (c.id === carpeta.id ? { ...c, color: nuevoColor } : c))
+      guardarCarpetas()
+      renderizarCarpetasSidebar(contenedor, agrupado, sidebar)
+    })
 
     const eliminarBtn = document.createElement("button")
     eliminarBtn.className = "carpetaEliminar"
@@ -1583,8 +1610,11 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     tituloWrap.appendChild(toggleBtn)
     tituloWrap.appendChild(nombreBtn)
 
+    acciones.appendChild(colorInput)
+    acciones.appendChild(eliminarBtn)
+
     header.appendChild(tituloWrap)
-    header.appendChild(eliminarBtn)
+    header.appendChild(acciones)
     card.appendChild(header)
 
     const lista = document.createElement("div")
@@ -2029,7 +2059,8 @@ function confirmarCarpeta() {
         id: `carpeta-${Date.now()}-${Math.random().toString(16).slice(2)}`,
         nombre,
         materias: [],
-        colapsada: false
+        colapsada: false,
+        color: "#1e3a8a"
       }
     ]
   }
