@@ -117,9 +117,9 @@ function manejarReordenArticulos(e) {
     ).elemento
 
   if (!objetivoDespues) {
-    contenedor.insertBefore(arrastrandoElem, articulosEnDom[0])
+    contenedor.appendChild(arrastrandoElem)
   } else {
-    contenedor.insertBefore(arrastrandoElem, objetivoDespues.nextSibling)
+    contenedor.insertBefore(arrastrandoElem, objetivoDespues)
   }
 }
 
