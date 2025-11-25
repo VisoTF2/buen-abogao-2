@@ -829,19 +829,7 @@ function activarArrastreMateria(item, lista, normativa) {
     if (!materiaArrastrada || item.dataset.materia === materiaArrastrada) return
 
     const rect = item.getBoundingClientRect()
-    const margenCambio = Math.max(10, rect.height * 0.35)
-    const limiteArriba = rect.top + margenCambio
-    const limiteAbajo = rect.bottom - margenCambio
-    const posicionY = e.clientY
-
-    let moverDespues = null
-    if (posicionY <= limiteArriba) {
-      moverDespues = false
-    } else if (posicionY >= limiteAbajo) {
-      moverDespues = true
-    } else {
-      return
-    }
+    const moverDespues = e.clientY >= rect.top + rect.height / 2
 
     const arrastrandoElem = lista.querySelector(
       `.sidebarItem[data-materia="${materiaArrastrada}"][data-normativa="${normativa}"]`
