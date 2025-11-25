@@ -89,6 +89,7 @@ function manejarReordenArticulos(e) {
   if (!(contenedor instanceof HTMLElement)) return
 
   const articulosEnDom = Array.from(contenedor.querySelectorAll(".articulo"))
+    .filter(el => el.dataset.id !== articuloArrastradoId)
   if (!articulosEnDom.length) return
 
   e.preventDefault()
@@ -100,21 +101,19 @@ function manejarReordenArticulos(e) {
 
   if (!arrastrandoElem) return
 
-  const objetivoDespues = articulosEnDom
-    .filter(el => el.dataset.id !== articuloArrastradoId)
-    .reduce(
-      (cercano, el) => {
-        const rect = el.getBoundingClientRect()
-        const offset = e.clientY - (rect.top + rect.height / 2)
+  const objetivoDespues = articulosEnDom.reduce(
+    (cercano, el) => {
+      const rect = el.getBoundingClientRect()
+      const offset = e.clientY - (rect.top + rect.height / 2)
 
-        if (offset < 0 && offset > cercano.offset) {
-          return { offset, elemento: el }
-        }
+      if (offset < 0 && offset > cercano.offset) {
+        return { offset, elemento: el }
+      }
 
-        return cercano
-      },
-      { offset: Number.NEGATIVE_INFINITY, elemento: null }
-    ).elemento
+      return cercano
+    },
+    { offset: Number.NEGATIVE_INFINITY, elemento: null }
+  ).elemento
 
   if (!objetivoDespues) {
     contenedor.appendChild(arrastrandoElem)
