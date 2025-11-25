@@ -878,21 +878,7 @@ function activarArrastreArticulo(box, normativa, materia) {
     if (!articuloArrastradoId || objetivo.dataset.id === articuloArrastradoId) return
 
     const rect = objetivo.getBoundingClientRect()
-    const margenCambio = Math.max(12, rect.height * 0.28)
-    const antesLimite = rect.top + margenCambio
-    const despuesLimite = rect.bottom - margenCambio
-    const posicionY = e.clientY
-
-    // Solo reordenar cuando el puntero se acerca a los bordes para que
-    // el cambio ocurra antes y con menos fricción.
-    let desplazarDespues = null
-    if (posicionY <= antesLimite) {
-      desplazarDespues = false
-    } else if (posicionY >= despuesLimite) {
-      desplazarDespues = true
-    } else {
-      return
-    }
+    const moverDespues = e.clientY >= rect.top + rect.height / 2
 
     const contenedor = objetivo.parentElement
     const arrastrandoElem = contenedor.querySelector(
@@ -901,7 +887,7 @@ function activarArrastreArticulo(box, normativa, materia) {
 
     if (!arrastrandoElem || arrastrandoElem === objetivo) return
 
-    if (desplazarDespues) {
+    if (moverDespues) {
       contenedor.insertBefore(arrastrandoElem, objetivo.nextSibling)
     } else {
       contenedor.insertBefore(arrastrandoElem, objetivo)
