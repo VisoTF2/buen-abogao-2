@@ -1544,9 +1544,29 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     const card = document.createElement("div")
     card.className = "carpetaBox"
     card.dataset.carpetaId = carpeta.id
+    if (carpeta.colapsada) card.classList.add("carpeta-colapsada")
 
     const header = document.createElement("div")
     header.className = "carpetaHeader"
+
+    const tituloWrap = document.createElement("div")
+    tituloWrap.className = "carpetaTituloWrap"
+
+    const toggleBtn = document.createElement("button")
+    toggleBtn.className = "carpetaToggle"
+    toggleBtn.type = "button"
+    toggleBtn.setAttribute("aria-expanded", carpeta.colapsada ? "false" : "true")
+    toggleBtn.setAttribute(
+      "aria-label",
+      carpeta.colapsada ? "Expandir carpeta" : "Colapsar carpeta"
+    )
+
+    const toggleIcon = document.createElement("span")
+    toggleIcon.className = "carpetaToggleIcon"
+    toggleIcon.textContent = "▾"
+    toggleBtn.appendChild(toggleIcon)
+    if (carpeta.colapsada) toggleBtn.classList.add("colapsada")
+    toggleBtn.addEventListener("click", () => toggleCarpetaColapsada(carpeta.id))
 
     const nombreBtn = document.createElement("button")
     nombreBtn.className = "carpetaNombre"
@@ -1560,13 +1580,17 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     eliminarBtn.textContent = "Borrar"
     eliminarBtn.addEventListener("click", () => eliminarCarpeta(carpeta.id))
 
-    header.appendChild(nombreBtn)
+    tituloWrap.appendChild(toggleBtn)
+    tituloWrap.appendChild(nombreBtn)
+
+    header.appendChild(tituloWrap)
     header.appendChild(eliminarBtn)
     card.appendChild(header)
 
     const lista = document.createElement("div")
     lista.className = "sidebarGroupList carpetaLista"
     lista.dataset.carpetaId = carpeta.id
+    lista.hidden = Boolean(carpeta.colapsada)
 
     const materiasDisponibles = (carpeta.materias || []).filter(m =>
       agrupado[m.normativa]?.[m.materia]
@@ -2001,7 +2025,12 @@ function confirmarCarpeta() {
   } else {
     carpetas = [
       ...carpetas,
-      { id: `carpeta-${Date.now()}-${Math.random().toString(16).slice(2)}`, nombre, materias: [] }
+      {
+        id: `carpeta-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        nombre,
+        materias: [],
+        colapsada: false
+      }
     ]
   }
 
@@ -2012,6 +2041,14 @@ function confirmarCarpeta() {
 
 function eliminarCarpeta(id) {
   carpetas = carpetas.filter(c => c.id !== id)
+  guardarCarpetas()
+  ordenarYMostrar()
+}
+
+function toggleCarpetaColapsada(id) {
+  carpetas = carpetas.map(carpeta =>
+    carpeta.id === id ? { ...carpeta, colapsada: !carpeta.colapsada } : carpeta
+  )
   guardarCarpetas()
   ordenarYMostrar()
 }

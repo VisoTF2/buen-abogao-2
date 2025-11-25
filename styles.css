@@ -833,6 +833,46 @@
   margin-bottom: 6px;
 }
 
+.carpetaTituloWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.carpetaToggle {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--accent);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.12s ease, color 0.15s ease;
+}
+
+.carpetaToggle:hover {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.carpetaToggle:active {
+  transform: translateY(1px);
+}
+
+.carpetaToggleIcon {
+  display: block;
+  font-size: 14px;
+  transition: transform 0.18s ease;
+}
+
+.carpetaToggle.colapsada .carpetaToggleIcon {
+  transform: rotate(-90deg);
+}
+
 
 .carpetaNombre {
   background: transparent;
@@ -842,6 +882,7 @@
   font-size: 15px;
   cursor: pointer;
   text-align: left;
+  flex: 1;
 }
 
 
@@ -868,6 +909,10 @@
   align-items: stretch;
   box-shadow: inset 0 0 0 1px transparent;
   min-height: var(--carpeta-slot-height);
+}
+
+.carpetaBox.carpeta-colapsada .carpetaLista {
+  display: none;
 }
 
 .carpetaLista-drop {
