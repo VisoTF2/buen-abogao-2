@@ -2102,7 +2102,7 @@ function abrirModalCarpeta(id = null) {
   if (!modalCarpeta || !modalCarpetaTitulo || !inputNombreCarpeta) return
   carpetaEnEdicionId = id
   const carpeta = carpetas.find(c => c.id === id)
-  modalCarpetaTitulo.textContent = id ? "Editar grupo" : "Nuevo grupo"
+  modalCarpetaTitulo.textContent = id ? "Editar carpeta" : "Nueva carpeta"
   inputNombreCarpeta.value = carpeta?.nombre || ""
   modalCarpeta.classList.add("visible")
   setTimeout(() => inputNombreCarpeta.focus(), 50)
