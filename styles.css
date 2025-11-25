@@ -849,6 +849,7 @@
   border-radius: 8px;
   width: 32px;
   height: 32px;
+  padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -865,8 +866,10 @@
 }
 
 .carpetaToggleIcon {
-  display: block;
-  font-size: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  line-height: 1;
   transition: transform 0.18s ease;
 }
 
