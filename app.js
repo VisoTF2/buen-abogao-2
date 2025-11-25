@@ -1664,11 +1664,12 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     toggleBtn.addEventListener("click", () => toggleCarpetaColapsada(carpeta.id))
     toggleBtn.style.color = colorCarpeta
 
-    const nombreBtn = document.createElement("button")
-    nombreBtn.className = "carpetaNombre"
-    nombreBtn.type = "button"
-    nombreBtn.textContent = carpeta.nombre || "Carpeta sin título"
-    nombreBtn.addEventListener("click", () => abrirModalCarpeta(carpeta.id))
+  const nombreBtn = document.createElement("button")
+  nombreBtn.className = "carpetaNombre"
+  nombreBtn.type = "button"
+  nombreBtn.textContent = carpeta.nombre || "Carpeta sin título"
+  nombreBtn.title = carpeta.nombre || "Carpeta sin título"
+  nombreBtn.addEventListener("click", () => abrirModalCarpeta(carpeta.id))
     nombreBtn.style.color = colorCarpeta
 
     const acciones = document.createElement("div")
