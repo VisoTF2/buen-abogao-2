@@ -127,7 +127,7 @@
       color: white;
     }
 
-.container {
+    .container {
   width: min(96vw, var(--layout-max-width));
   max-width: none;
   margin: 18px auto 26px;
@@ -138,113 +138,86 @@
   box-sizing: border-box; /* ← MUY IMPORTANTE */
 }
 
-    .banner-config {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 20px;
-      align-items: stretch;
-      margin-bottom: 26px;
+    .banner-controls {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.26);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 12px;
+      padding: 10px 12px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      color: #0f172a;
     }
 
-    .banner-preview {
-      background: linear-gradient(135deg, rgba(30, 58, 138, 0.92), rgba(59, 130, 246, 0.9));
+    body.oscuro .banner-controls {
+      background: rgba(20, 24, 31, 0.6);
+      border-color: rgba(255, 255, 255, 0.22);
       color: #f8fafc;
-      border-radius: 16px;
-      padding: 22px;
-      min-height: 150px;
+    }
+
+    .banner-field.inline {
+      margin: 0;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 6px 20px rgba(0, 0, 0, 0.16);
+      gap: 6px;
+      font-weight: 600;
+      font-size: 13px;
     }
 
-    .banner-preview::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.18), transparent 36%),
-        radial-gradient(circle at 80% 10%, rgba(255, 255, 255, 0.12), transparent 32%);
-      mix-blend-mode: screen;
-      pointer-events: none;
-    }
-
-    .banner-preview__title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .banner-preview__subtitle {
-      font-size: 15px;
-      color: #e5edff;
-      max-width: 80%;
-      line-height: 1.4;
-      position: relative;
-      z-index: 1;
-    }
-
-    .banner-actions {
-      background: var(--article-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      align-items: end;
-    }
-
-    .banner-field label {
-      margin: 0 0 8px;
-      font-size: 14px;
-    }
-
-    .banner-field input[type="color"] {
-      width: 100%;
-      height: 48px;
-      padding: 6px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: var(--card);
+    .banner-field.inline input[type="color"] {
+      width: 140px;
+      height: 36px;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      background: rgba(255, 255, 255, 0.8);
       cursor: pointer;
     }
 
-    .banner-field input[type="file"] {
-      width: 100%;
+    body.oscuro .banner-field.inline input[type="color"] {
+      background: rgba(15, 17, 24, 0.9);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .banner-field.inline input[type="file"] {
+      width: 220px;
+      font-size: 12px;
     }
 
     .banner-file-name {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--muted-text);
-      margin-top: 8px;
-      word-break: break-word;
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .banner-reset {
-      justify-self: start;
-      padding: 12px 16px;
-      background: transparent;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.9);
       color: var(--accent);
       border: 1px solid var(--accent);
-      border-radius: 12px;
-      font-weight: 600;
+      border-radius: 10px;
+      font-weight: 700;
       cursor: pointer;
       transition: 0.2s ease;
+      white-space: nowrap;
     }
 
     .banner-reset:hover {
-      background: rgba(30, 58, 138, 0.08);
-      color: var(--accent);
+      background: rgba(255, 255, 255, 0.75);
     }
 
-    @media (max-width: 860px) {
-      .banner-config {
-        grid-template-columns: 1fr;
-      }
+    body.oscuro .banner-reset {
+      background: rgba(13, 17, 23, 0.85);
+      color: #f8fafc;
+      border-color: rgba(255, 255, 255, 0.4);
     }
 
     h2 {

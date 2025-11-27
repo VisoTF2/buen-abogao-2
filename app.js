@@ -19,7 +19,6 @@ let bannerConfig = { color: "", image: "", imageName: "" }
 const buscadorInput = document.getElementById("buscadorInput")
 const appRoot = document.getElementById("appRoot")
 const appBanner = document.getElementById("appBanner")
-const bannerPreview = document.getElementById("bannerPreview")
 const bannerColorInput = document.getElementById("bannerColorInput")
 const bannerImageInput = document.getElementById("bannerImageInput")
 const bannerImageName = document.getElementById("bannerImageName")
@@ -59,6 +58,8 @@ function actualizarNombreArchivoBanner(nombre = "") {
 }
 
 function aplicarBannerPersonalizado() {
+  if (!appBanner) return
+
   const colorBase = bannerConfig.color || obtenerColorBaseBanner()
   const capas = bannerConfig.image
     ? [
@@ -67,12 +68,9 @@ function aplicarBannerPersonalizado() {
       ]
     : [`linear-gradient(135deg, ${colorBase}, ${colorBase})`]
 
-  ;[appBanner, bannerPreview].forEach(el => {
-    if (!el) return
-    el.style.backgroundColor = colorBase
-    el.style.backgroundImage = capas.join(", ")
-    el.classList.toggle("banner-con-imagen", Boolean(bannerConfig.image))
-  })
+  appBanner.style.backgroundColor = colorBase
+  appBanner.style.backgroundImage = capas.join(", ")
+  appBanner.classList.toggle("banner-con-imagen", Boolean(bannerConfig.image))
 }
 
 function guardarBannerConfig() {
