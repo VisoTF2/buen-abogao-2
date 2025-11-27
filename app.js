@@ -16,6 +16,9 @@ const elementosMarcados = new Set()
 let materiaDropProcesado = false
 const buscadorInput = document.getElementById("buscadorInput")
 const appRoot = document.getElementById("appRoot")
+const appBanner = document.getElementById("appBanner")
+const bannerInput = document.getElementById("bannerInput")
+const BANNER_STORAGE_KEY = "bannerImagenApp"
 const documentoInput = document.getElementById("documentoInput")
 const listaDocumentos = document.getElementById("listaDocumentos")
 const visorDocumentos = document.getElementById("visorDocumentos")
@@ -82,6 +85,41 @@ if (botonDocumentos) {
     if (archivo) procesarDocumento(archivo)
   })
 }
+
+function abrirSelectorBanner() {
+  bannerInput?.click()
+}
+
+function aplicarBanner(src) {
+  if (!appBanner) return
+
+  if (src) {
+    appBanner.style.backgroundImage =
+      `linear-gradient(rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.28)), url(${src})`
+    appBanner.classList.add("banner-con-imagen")
+  } else {
+    appBanner.style.backgroundImage = ""
+    appBanner.classList.remove("banner-con-imagen")
+  }
+}
+
+aplicarBanner(localStorage.getItem(BANNER_STORAGE_KEY) || "")
+
+bannerInput?.addEventListener("change", e => {
+  const archivo = e.target.files?.[0]
+  if (!archivo) return
+
+  const lector = new FileReader()
+  lector.onload = () => {
+    const dataUrl = lector.result
+    if (typeof dataUrl === "string") {
+      aplicarBanner(dataUrl)
+      localStorage.setItem(BANNER_STORAGE_KEY, dataUrl)
+    }
+  }
+  lector.readAsDataURL(archivo)
+  e.target.value = ""
+})
 
 function manejarReordenArticulos(e) {
   if (!articuloArrastradoId) return
