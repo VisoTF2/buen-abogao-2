@@ -11,9 +11,11 @@
 <body>
   <div class="app-root" id="appRoot">
   <div class="zoom-canvas">
-  <header>
-    Buen abogao <br>
-    <button class="modo" onclick="toggleModo()">Modo oscuro</button>
+  <header id="appBanner">
+    <div class="banner-top">
+      <h1 class="app-title">Buen abogao</h1>
+      <button class="modo" onclick="toggleModo()">Modo oscuro</button>
+    </div>
   </header>
 
   <div class="container">
@@ -162,20 +164,17 @@
   <div class="modal-backdrop" id="modalCarpeta" role="dialog" aria-modal="true">
     <div class="modal-card">
       <div class="modal-head">
-        <div class="modal-title-wrap">
-          <p class="modal-kicker">Carpeta</p>
-          <h3 id="modalCarpetaTitulo">Nueva carpeta</h3>
-        </div>
+        <h3 id="modalCarpetaTitulo">Nueva carpeta</h3>
         <button class="modal-close" type="button" aria-label="Cerrar" onclick="cerrarModalCarpeta()">✕</button>
       </div>
 
       <div class="modal-body">
         <label for="inputNombreCarpeta">Nombre</label>
-        <input type="text" id="inputNombreCarpeta" placeholder="Ejemplo: Culpabilidad">
+        <input type="text" id="inputNombreCarpeta" placeholder="Ej. Materias clave">
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="btn-primary" id="modalCarpetaGuardar">Guardar</button>
+        <button type="button" class="btn-primary" id="modalCarpetaGuardar">Guardar carpeta</button>
       </div>
     </div>
   </div>

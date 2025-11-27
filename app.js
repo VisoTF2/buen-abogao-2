@@ -3,7 +3,9 @@ let codigoActual = {}
 let articulos = JSON.parse(localStorage.getItem("articulosGuardados") || "[]")
   .map(a => ({ ...a, contenidoHTML: a.contenidoHTML ?? null }))
 let materiasOrden = JSON.parse(localStorage.getItem("materiasOrden") || "{}")
-let carpetas = JSON.parse(localStorage.getItem("carpetasMaterias") || "[]")
+let carpetas = JSON.parse(localStorage.getItem("carpetasMaterias") || "[]").map(
+  c => ({ ...c, color: c.color || "#1e3a8a" })
+)
 let normativaSeleccionada = null
 let materiaSeleccionada = null
 let resultadosBusqueda = []
@@ -11,11 +13,13 @@ let indiceResultado = 0
 let ultimoTerminoBusqueda = ""
 let documentosCargados = []
 const elementosMarcados = new Set()
+let materiaDropProcesado = false
 const buscadorInput = document.getElementById("buscadorInput")
 const appRoot = document.getElementById("appRoot")
 const documentoInput = document.getElementById("documentoInput")
 const listaDocumentos = document.getElementById("listaDocumentos")
 const visorDocumentos = document.getElementById("visorDocumentos")
+const contenedorArticulosPrincipal = document.getElementById("contenidoArticulos")
 const modalCarpeta = document.getElementById("modalCarpeta")
 const modalCarpetaTitulo = document.getElementById("modalCarpetaTitulo")
 const inputNombreCarpeta = document.getElementById("inputNombreCarpeta")
@@ -77,6 +81,58 @@ if (botonDocumentos) {
     const archivo = e.dataTransfer?.files?.[0]
     if (archivo) procesarDocumento(archivo)
   })
+}
+
+function manejarReordenArticulos(e) {
+  if (!articuloArrastradoId) return
+
+  const contenedor = e.currentTarget
+  if (!(contenedor instanceof HTMLElement)) return
+
+  const articulosEnDom = Array.from(contenedor.querySelectorAll(".articulo"))
+    .filter(el => el.dataset.id !== articuloArrastradoId)
+  if (!articulosEnDom.length) return
+
+  e.preventDefault()
+  if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
+
+  const arrastrandoElem = contenedor.querySelector(
+    `.articulo[data-id="${articuloArrastradoId}"]`
+  )
+
+  if (!arrastrandoElem) return
+
+  const objetivoDespues = articulosEnDom.reduce(
+    (cercano, el) => {
+      const rect = el.getBoundingClientRect()
+      const offset = e.clientY - (rect.top + rect.height / 2)
+
+      if (offset < 0 && offset > cercano.offset) {
+        return { offset, elemento: el }
+      }
+
+      return cercano
+    },
+    { offset: Number.NEGATIVE_INFINITY, elemento: null }
+  ).elemento
+
+  if (!objetivoDespues) {
+    contenedor.appendChild(arrastrandoElem)
+  } else {
+    contenedor.insertBefore(arrastrandoElem, objetivoDespues)
+  }
+}
+
+function marcarListaComoObjetivo(lista) {
+  lista.classList.add("drop-activa")
+  if (lista.classList.contains("carpetaLista")) {
+    lista.classList.add("carpetaLista-drop")
+  }
+}
+
+if (contenedorArticulosPrincipal) {
+  contenedorArticulosPrincipal.addEventListener("dragover", manejarReordenArticulos)
+  contenedorArticulosPrincipal.addEventListener("drop", manejarReordenArticulos)
 }
 
 modalCarpetaGuardar?.addEventListener("click", confirmarCarpeta)
@@ -460,15 +516,26 @@ function moverMateriaAFueraDeCarpeta(materia, normativa) {
   if (cambio) ordenarYMostrar()
 }
 
-function aplicarOrdenMateriasDesdeDOM(lista, normativa) {
+function aplicarOrdenMateriasDesdeDOM(lista) {
   if (!lista) return
   const items = Array.from(lista.querySelectorAll(".sidebarItem"))
   if (!items.length) return
 
-  if (!materiasOrden[normativa]) materiasOrden[normativa] = {}
+  const ordenesPorNormativa = {}
 
   items.forEach((item, index) => {
-    materiasOrden[normativa][item.dataset.materia] = index + 1
+    const normativa = item.dataset.normativa
+    const materia = item.dataset.materia
+    if (!normativa || !materia) return
+    if (!ordenesPorNormativa[normativa]) ordenesPorNormativa[normativa] = []
+    ordenesPorNormativa[normativa].push({ materia, posicion: index + 1 })
+  })
+
+  Object.entries(ordenesPorNormativa).forEach(([normativa, materias]) => {
+    if (!materiasOrden[normativa]) materiasOrden[normativa] = {}
+    materias.forEach(({ materia, posicion }) => {
+      materiasOrden[normativa][materia] = posicion
+    })
   })
 
   guardarOrdenMaterias()
@@ -761,6 +828,106 @@ function aplicarOrdenDesdeDOM(contenedorLista, normativa, materia) {
   ordenarYMostrar()
 }
 
+function obtenerElementoMateriaDespues(lista, posicionY) {
+  return Array.from(lista.querySelectorAll(".sidebarItem"))
+    .filter(
+      el =>
+        el.dataset.materia !== materiaArrastrada ||
+        el.dataset.normativa !== materiaArrastradaNormativa
+    )
+    .reduce(
+      (cercano, el) => {
+        const rect = el.getBoundingClientRect()
+        const offset = posicionY - (rect.top + rect.height / 2)
+
+        if (offset < 0 && offset > cercano.offset) {
+          return { offset, elemento: el }
+        }
+
+        return cercano
+      },
+      { offset: Number.NEGATIVE_INFINITY, elemento: null }
+    ).elemento
+}
+
+function limpiarPlaceholderVacio(lista) {
+  const placeholder = lista?.querySelector(".carpetaVacia")
+  if (placeholder) placeholder.remove()
+}
+
+function manejarDragOverListaMaterias(e) {
+  if (!materiaArrastrada) return
+  e.preventDefault()
+
+  const lista = e.currentTarget
+  marcarListaComoObjetivo(lista)
+  if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
+
+  const arrastrandoElem = document.querySelector(
+    `.sidebarItem[data-materia="${materiaArrastrada}"][data-normativa="${materiaArrastradaNormativa}"]`
+  )
+
+  if (!arrastrandoElem) return
+
+  limpiarPlaceholderVacio(lista)
+
+  const despuesDe = obtenerElementoMateriaDespues(lista, e.clientY)
+
+  if (arrastrandoElem.parentElement !== lista) {
+    lista.appendChild(arrastrandoElem)
+  }
+
+  if (!despuesDe) {
+    lista.appendChild(arrastrandoElem)
+  } else {
+    lista.insertBefore(arrastrandoElem, despuesDe)
+  }
+}
+
+function manejarDropListaMaterias(e) {
+  if (!materiaArrastrada || !materiaArrastradaNormativa) return
+  e.preventDefault()
+
+  const listaObjetivo = e.currentTarget
+  listaObjetivo.classList.remove("carpetaLista-drop", "drop-activa")
+
+  const carpetaObjetivo = listaObjetivo.dataset.carpetaId || null
+  const mismaCarpeta = (materiaArrastradaCarpetaId || null) === carpetaObjetivo
+
+  if (!mismaCarpeta) {
+    materiaDropProcesado = true
+    if (carpetaObjetivo) {
+      moverMateriaACarpeta(
+        materiaArrastradaNormativa,
+        materiaArrastrada,
+        carpetaObjetivo
+      )
+    } else {
+      moverMateriaAFueraDeCarpeta(materiaArrastrada, materiaArrastradaNormativa)
+    }
+    limpiarEstadoArrastreMateria()
+    return
+  }
+
+  aplicarOrdenMateriasDesdeDOM(listaObjetivo)
+  materiaDropProcesado = true
+  limpiarEstadoArrastreMateria()
+}
+
+function prepararListaMaterias(lista) {
+  if (!lista) return
+
+  lista.addEventListener("dragover", manejarDragOverListaMaterias)
+  lista.addEventListener("dragenter", e => {
+    if (!materiaArrastrada) return
+    marcarListaComoObjetivo(lista)
+  })
+  lista.addEventListener("dragleave", () => {
+    lista.classList.remove("drop-activa", "carpetaLista-drop")
+  })
+  lista.addEventListener("drop", manejarDropListaMaterias)
+}
+
 function activarArrastreMateria(item, lista, normativa) {
   item.draggable = true
 
@@ -768,6 +935,7 @@ function activarArrastreMateria(item, lista, normativa) {
     materiaArrastrada = item.dataset.materia
     materiaArrastradaNormativa = normativa
     materiaArrastradaCarpetaId = item.dataset.carpetaId || null
+    materiaDropProcesado = false
     item.classList.add("arrastrando")
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = "move"
@@ -775,48 +943,22 @@ function activarArrastreMateria(item, lista, normativa) {
     }
   })
 
-  item.addEventListener("dragover", e => {
-    e.preventDefault()
-    if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
-    if (!materiaArrastrada || item.dataset.materia === materiaArrastrada) return
-
-    const rect = item.getBoundingClientRect()
-    const margenCambio = Math.max(10, rect.height * 0.35)
-    const limiteArriba = rect.top + margenCambio
-    const limiteAbajo = rect.bottom - margenCambio
-    const posicionY = e.clientY
-
-    let moverDespues = null
-    if (posicionY <= limiteArriba) {
-      moverDespues = false
-    } else if (posicionY >= limiteAbajo) {
-      moverDespues = true
-    } else {
-      return
-    }
-
-    const arrastrandoElem = lista.querySelector(
-      `.sidebarItem[data-materia="${materiaArrastrada}"][data-normativa="${normativa}"]`
-    )
-
-    if (!arrastrandoElem || arrastrandoElem === item) return
-
-    if (moverDespues) {
-      lista.insertBefore(arrastrandoElem, item.nextSibling)
-    } else {
-      lista.insertBefore(arrastrandoElem, item)
-    }
-  })
-
-  item.addEventListener("drop", e => e.preventDefault())
-
   item.addEventListener("dragend", () => {
     item.classList.remove("arrastrando")
-    aplicarOrdenMateriasDesdeDOM(lista, normativa)
-    materiaArrastrada = null
-    materiaArrastradaNormativa = null
-    materiaArrastradaCarpetaId = null
+    if (!materiaDropProcesado) {
+      aplicarOrdenMateriasDesdeDOM(item.parentElement)
+      limpiarEstadoArrastreMateria()
+    }
   })
+}
+
+function limpiarEstadoArrastreMateria() {
+  document
+    .querySelectorAll(".sidebarGroupList")
+    .forEach(l => l.classList.remove("drop-activa", "carpetaLista-drop"))
+  materiaArrastrada = null
+  materiaArrastradaNormativa = null
+  materiaArrastradaCarpetaId = null
 }
 
 function activarArrastreArticulo(box, normativa, materia) {
@@ -874,36 +1016,6 @@ function activarArrastreArticulo(box, normativa, materia) {
 
     const objetivo = e.currentTarget
     if (!articuloArrastradoId || objetivo.dataset.id === articuloArrastradoId) return
-
-    const rect = objetivo.getBoundingClientRect()
-    const margenCambio = Math.max(12, rect.height * 0.28)
-    const antesLimite = rect.top + margenCambio
-    const despuesLimite = rect.bottom - margenCambio
-    const posicionY = e.clientY
-
-    // Solo reordenar cuando el puntero se acerca a los bordes para que
-    // el cambio ocurra antes y con menos fricción.
-    let desplazarDespues = null
-    if (posicionY <= antesLimite) {
-      desplazarDespues = false
-    } else if (posicionY >= despuesLimite) {
-      desplazarDespues = true
-    } else {
-      return
-    }
-
-    const contenedor = objetivo.parentElement
-    const arrastrandoElem = contenedor.querySelector(
-      `.articulo[data-id="${articuloArrastradoId}"]`
-    )
-
-    if (!arrastrandoElem || arrastrandoElem === objetivo) return
-
-    if (desplazarDespues) {
-      contenedor.insertBefore(arrastrandoElem, objetivo.nextSibling)
-    } else {
-      contenedor.insertBefore(arrastrandoElem, objetivo)
-    }
   })
 
   box.addEventListener("drop", e => {
@@ -1438,29 +1550,8 @@ function ordenarYMostrar() {
 
     const listaMaterias = document.createElement("div")
     listaMaterias.className = "sidebarGroupList"
-
-    const habilitarDropSalida = elemento => {
-      elemento.addEventListener("dragover", e => {
-        if (!materiaArrastrada) return
-        e.preventDefault()
-        elemento.classList.add("drop-activa")
-        if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
-      })
-
-      elemento.addEventListener("dragleave", () => {
-        elemento.classList.remove("drop-activa")
-      })
-
-      elemento.addEventListener("drop", e => {
-        if (!materiaArrastrada) return
-        e.preventDefault()
-        elemento.classList.remove("drop-activa")
-        const normOrigen = materiaArrastradaNormativa || norm
-        setTimeout(() => moverMateriaAFueraDeCarpeta(materiaArrastrada, normOrigen), 0)
-      })
-    }
-
-    habilitarDropSalida(listaMaterias)
+    listaMaterias.dataset.normativa = norm
+    prepararListaMaterias(listaMaterias)
     grupo.appendChild(listaMaterias)
 
     const nombresOrdenados = ordenarMaterias(nombresMaterias, norm).filter(
@@ -1541,18 +1632,64 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
   }
 
   carpetas.forEach(carpeta => {
+    const colorCarpeta = carpeta.color || "#1e3a8a"
+
     const card = document.createElement("div")
     card.className = "carpetaBox"
     card.dataset.carpetaId = carpeta.id
+    if (carpeta.colapsada) card.classList.add("carpeta-colapsada")
+    card.style.setProperty("--carpeta-color", colorCarpeta)
+    card.style.borderColor = colorCarpeta
 
     const header = document.createElement("div")
     header.className = "carpetaHeader"
 
-    const nombreBtn = document.createElement("button")
-    nombreBtn.className = "carpetaNombre"
-    nombreBtn.type = "button"
-    nombreBtn.textContent = carpeta.nombre || "Carpeta sin título"
-    nombreBtn.addEventListener("click", () => abrirModalCarpeta(carpeta.id))
+    const tituloWrap = document.createElement("div")
+    tituloWrap.className = "carpetaTituloWrap"
+
+    const toggleBtn = document.createElement("button")
+    toggleBtn.className = "carpetaToggle"
+    toggleBtn.type = "button"
+    toggleBtn.setAttribute("aria-expanded", carpeta.colapsada ? "false" : "true")
+    toggleBtn.setAttribute(
+      "aria-label",
+      carpeta.colapsada ? "Expandir carpeta" : "Colapsar carpeta"
+    )
+
+    const toggleIcon = document.createElement("span")
+    toggleIcon.className = "carpetaToggleIcon"
+    toggleIcon.textContent = "▾"
+    toggleBtn.appendChild(toggleIcon)
+    if (carpeta.colapsada) toggleBtn.classList.add("colapsada")
+    toggleBtn.addEventListener("click", () => toggleCarpetaColapsada(carpeta.id))
+    toggleBtn.style.color = colorCarpeta
+
+  const nombreBtn = document.createElement("button")
+  nombreBtn.className = "carpetaNombre"
+  nombreBtn.type = "button"
+  nombreBtn.textContent = carpeta.nombre || "Carpeta sin título"
+  nombreBtn.title = carpeta.nombre || "Carpeta sin título"
+  nombreBtn.addEventListener("click", () => abrirModalCarpeta(carpeta.id))
+    nombreBtn.style.color = colorCarpeta
+
+    const acciones = document.createElement("div")
+    acciones.className = "carpetaActions"
+
+    const colorInput = document.createElement("input")
+    colorInput.type = "color"
+    colorInput.className = "carpeta-color-input"
+    colorInput.value = colorCarpeta
+    colorInput.addEventListener("click", e => e.stopPropagation())
+    colorInput.addEventListener("input", () => {
+      card.style.setProperty("--carpeta-color", colorInput.value)
+      card.style.borderColor = colorInput.value
+    })
+    colorInput.addEventListener("change", () => {
+      const nuevoColor = colorInput.value
+      carpetas = carpetas.map(c => (c.id === carpeta.id ? { ...c, color: nuevoColor } : c))
+      guardarCarpetas()
+      renderizarCarpetasSidebar(contenedor, agrupado, sidebar)
+    })
 
     const eliminarBtn = document.createElement("button")
     eliminarBtn.className = "carpetaEliminar"
@@ -1560,35 +1697,26 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     eliminarBtn.textContent = "Borrar"
     eliminarBtn.addEventListener("click", () => eliminarCarpeta(carpeta.id))
 
-    header.appendChild(nombreBtn)
-    header.appendChild(eliminarBtn)
+    tituloWrap.appendChild(toggleBtn)
+    tituloWrap.appendChild(nombreBtn)
+
+    acciones.appendChild(colorInput)
+    acciones.appendChild(eliminarBtn)
+
+    header.appendChild(tituloWrap)
+    header.appendChild(acciones)
     card.appendChild(header)
 
     const lista = document.createElement("div")
     lista.className = "sidebarGroupList carpetaLista"
     lista.dataset.carpetaId = carpeta.id
+    lista.hidden = Boolean(carpeta.colapsada)
 
     const materiasDisponibles = (carpeta.materias || []).filter(m =>
       agrupado[m.normativa]?.[m.materia]
     )
 
-    lista.addEventListener("dragover", e => {
-      if (!materiaArrastrada) return
-      e.preventDefault()
-      lista.classList.add("carpetaLista-drop")
-      if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
-    })
-
-    lista.addEventListener("dragleave", () => {
-      lista.classList.remove("carpetaLista-drop")
-    })
-
-    lista.addEventListener("drop", e => {
-      if (!materiaArrastrada || !materiaArrastradaNormativa) return
-      e.preventDefault()
-      lista.classList.remove("carpetaLista-drop")
-      moverMateriaACarpeta(materiaArrastradaNormativa, materiaArrastrada, carpeta.id)
-    })
+    prepararListaMaterias(lista)
 
     if (!materiasDisponibles.length) {
       const aviso = document.createElement("div")
@@ -2001,7 +2129,13 @@ function confirmarCarpeta() {
   } else {
     carpetas = [
       ...carpetas,
-      { id: `carpeta-${Date.now()}-${Math.random().toString(16).slice(2)}`, nombre, materias: [] }
+      {
+        id: `carpeta-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        nombre,
+        materias: [],
+        colapsada: false,
+        color: "#1e3a8a"
+      }
     ]
   }
 
@@ -2012,6 +2146,14 @@ function confirmarCarpeta() {
 
 function eliminarCarpeta(id) {
   carpetas = carpetas.filter(c => c.id !== id)
+  guardarCarpetas()
+  ordenarYMostrar()
+}
+
+function toggleCarpetaColapsada(id) {
+  carpetas = carpetas.map(carpeta =>
+    carpeta.id === id ? { ...carpeta, colapsada: !carpeta.colapsada } : carpeta
+  )
   guardarCarpetas()
   ordenarYMostrar()
 }
