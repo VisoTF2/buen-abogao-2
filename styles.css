@@ -133,13 +133,13 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #f8fafc;
+      background: var(--card);
       color: var(--accent);
       border-radius: 6px;
       padding: 4px 10px;
       font-weight: 700;
       font-size: 11px;
-      border: 1px solid rgba(15, 23, 42, 0.18);
+      border: 1px solid var(--border);
       cursor: pointer;
       transition: 0.2s;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
@@ -150,9 +150,10 @@
     }
 
     body.oscuro .modo {
-      background: #f1f5f9;
-      color: #111622;
-      border-color: rgba(17, 22, 34, 0.16);
+      background: var(--card);
+      color: var(--accent-light);
+      border-color: var(--border);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
     }
 
     .container {
