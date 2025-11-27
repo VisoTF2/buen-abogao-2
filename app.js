@@ -45,9 +45,10 @@ if (typeof pdfjsLib !== "undefined") {
 }
 
 const ZOOM_STEP = 0.05
-const MIN_ZOOM = 1.00
+const MIN_ZOOM = 1.0
 const MAX_ZOOM = 1.35
-let zoomActual = 1
+const ZOOM_STORAGE_KEY = "appZoomScale"
+let zoomActual = obtenerZoomInicial()
 let pinchStartDistance = null
 let pinchStartZoom = 1
 let articuloArrastradoId = null
@@ -650,10 +651,17 @@ function siguienteOrdenPara(normativa, materia) {
   return Math.max(...ordenes) + 1
 }
 
+function obtenerZoomInicial() {
+  const guardado = parseFloat(localStorage.getItem(ZOOM_STORAGE_KEY) || "")
+  if (!Number.isFinite(guardado)) return 1
+  return guardado
+}
+
 function aplicarZoom(nivel) {
   const limitado = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nivel))
   zoomActual = limitado
   document.documentElement.style.setProperty("--zoom-scale", limitado.toFixed(3))
+  localStorage.setItem(ZOOM_STORAGE_KEY, limitado.toFixed(3))
 }
 
 function distanciaEntreToques(touches) {
