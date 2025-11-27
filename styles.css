@@ -402,16 +402,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 6px 0 12px;
-      margin: 8px auto 14px;
+      padding: 10px 0 14px;
+      margin: 6px auto 12px;
       gap: 0;
+      text-align: center;
     }
 
     .donaciones > * {
-      display: inline-flex !important;
-      align-items: center;
-      justify-content: center;
-      margin: 0 !important;
+      display: inline-block;
+      margin: 0;
     }
 
     .documentos-panel {
