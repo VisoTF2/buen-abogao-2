@@ -19,6 +19,8 @@ const appRoot = document.getElementById("appRoot")
 const appBanner = document.getElementById("appBanner")
 const bannerInput = document.getElementById("bannerInput")
 const BANNER_STORAGE_KEY = "bannerImagenApp"
+const fondoInput = document.getElementById("fondoInput")
+const FONDO_STORAGE_KEY = "fondoImagenApp"
 const documentoInput = document.getElementById("documentoInput")
 const listaDocumentos = document.getElementById("listaDocumentos")
 const visorDocumentos = document.getElementById("visorDocumentos")
@@ -121,6 +123,55 @@ bannerInput?.addEventListener("change", e => {
     if (typeof dataUrl === "string") {
       aplicarBanner(dataUrl)
       localStorage.setItem(BANNER_STORAGE_KEY, dataUrl)
+    }
+  }
+  lector.readAsDataURL(archivo)
+  e.target.value = ""
+})
+
+
+function abrirSelectorFondo() {
+  fondoInput?.click()
+}
+
+function aplicarFondo(src) {
+  if (!document.body) return
+
+  if (src) {
+    document.body.style.backgroundImage = `url(${src})`
+    document.body.style.backgroundSize = "cover"
+    document.body.style.backgroundRepeat = "no-repeat"
+    document.body.style.backgroundAttachment = "fixed"
+    document.body.style.backgroundPosition = "center"
+    document.body.classList.add("fondo-personalizado")
+  } else {
+    document.body.style.backgroundImage = ""
+    document.body.style.backgroundSize = ""
+    document.body.style.backgroundRepeat = ""
+    document.body.style.backgroundAttachment = ""
+    document.body.style.backgroundPosition = ""
+    document.body.classList.remove("fondo-personalizado")
+  }
+}
+
+aplicarFondo(localStorage.getItem(FONDO_STORAGE_KEY) || "")
+
+function restablecerFondo() {
+  aplicarFondo("")
+  localStorage.removeItem(FONDO_STORAGE_KEY)
+  if (fondoInput) fondoInput.value = ""
+}
+
+fondoInput?.addEventListener("change", e => {
+  const archivo = e.target.files?.[0]
+  if (!archivo) return
+
+  const lector = new FileReader()
+  lector.onload = () => {
+    const dataUrl = lector.result
+    if (typeof dataUrl === "string") {
+      aplicarFondo(dataUrl)
+      localStorage.setItem(FONDO_STORAGE_KEY, dataUrl)
     }
   }
   lector.readAsDataURL(archivo)

@@ -2,7 +2,7 @@
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap');
 
     :root {
-      --bg: #eef1f5;
+      --bg: #d9d9d9;
       --text: #111827;
       --card: white;
       --border: #d1d5db;
@@ -63,6 +63,13 @@
       color: var(--text);
       transition: 0.25s ease;
       overflow-x: hidden;
+    }
+
+    body.fondo-personalizado {
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-position: center;
     }
 
     .app-root {
@@ -165,12 +172,17 @@
       height: 32px;
     }
 
-    .banner-actions {
+    .banner-actions,
+    .fondo-actions {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       margin-top: 2px;
+    }
+
+    .fondo-actions {
+      margin-top: 6px;
     }
 
     .banner-reset {
