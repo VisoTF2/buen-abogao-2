@@ -15,11 +15,10 @@ let documentosCargados = []
 const elementosMarcados = new Set()
 let materiaDropProcesado = false
 const BANNER_STORAGE_KEY = "configBanner"
-let bannerConfig = { color: "", image: "", imageName: "" }
+let bannerConfig = { image: "", imageName: "" }
 const buscadorInput = document.getElementById("buscadorInput")
 const appRoot = document.getElementById("appRoot")
 const appBanner = document.getElementById("appBanner")
-const bannerColorInput = document.getElementById("bannerColorInput")
 const bannerImageInput = document.getElementById("bannerImageInput")
 const bannerImageName = document.getElementById("bannerImageName")
 const bannerResetBtn = document.getElementById("bannerReset")
@@ -60,7 +59,7 @@ function actualizarNombreArchivoBanner(nombre = "") {
 function aplicarBannerPersonalizado() {
   if (!appBanner) return
 
-  const colorBase = bannerConfig.color || obtenerColorBaseBanner()
+  const colorBase = obtenerColorBaseBanner()
   const capas = bannerConfig.image
     ? [
         "linear-gradient(180deg, rgba(0,0,0,0.38), rgba(0,0,0,0.26))",
@@ -101,23 +100,14 @@ function inicializarBannerPersonalizado() {
     try {
       const parsed = JSON.parse(guardado)
       bannerConfig = {
-        color: parsed.color || obtenerColorBaseBanner(),
         image: parsed.image || "",
         imageName: parsed.imageName || ""
       }
     } catch (_) {
-      bannerConfig = { color: obtenerColorBaseBanner(), image: "", imageName: "" }
+      bannerConfig = { image: "", imageName: "" }
     }
   } else {
-    bannerConfig = { color: obtenerColorBaseBanner(), image: "", imageName: "" }
-  }
-
-  if (bannerColorInput) {
-    bannerColorInput.value = bannerConfig.color
-    bannerColorInput.addEventListener("input", e => {
-      bannerConfig.color = e.target.value || obtenerColorBaseBanner()
-      guardarBannerConfig()
-    })
+    bannerConfig = { image: "", imageName: "" }
   }
 
   if (bannerImageInput) {
@@ -126,8 +116,7 @@ function inicializarBannerPersonalizado() {
 
   if (bannerResetBtn) {
     bannerResetBtn.addEventListener("click", () => {
-      bannerConfig = { color: obtenerColorBaseBanner(), image: "", imageName: "" }
-      if (bannerColorInput) bannerColorInput.value = bannerConfig.color
+      bannerConfig = { image: "", imageName: "" }
       if (bannerImageInput) bannerImageInput.value = ""
       actualizarNombreArchivoBanner()
       guardarBannerConfig()
