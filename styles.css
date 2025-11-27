@@ -25,7 +25,7 @@
       --search-highlight-mark: #dbeafe;
       --search-highlight-mark-active: #bfdbfe;
       --zoom-scale: 1;
-      --layout-max-width: 1400px;
+      --layout-max-width: 1600px;
       --layout-padding: 22px;
       --panel-min-height: clamp(440px, 68vh, 680px);
     }
@@ -195,8 +195,8 @@
       height: 32px;
     }
 
-    .container {
-  width: min(96vw, var(--layout-max-width));
+.container {
+  width: min(98vw, var(--layout-max-width));
   max-width: none;
   margin: 18px auto 26px;
   background: var(--card);
