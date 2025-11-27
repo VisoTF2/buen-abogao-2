@@ -11,7 +11,9 @@ let materiaSeleccionada = null
 let resultadosBusqueda = []
 let indiceResultado = 0
 let ultimoTerminoBusqueda = ""
-let documentosCargados = []
+const DOCUMENTOS_STORAGE_KEY = "documentosSubidos"
+const MODO_OSCURO_STORAGE_KEY = "modoOscuroActivo"
+let documentosCargados = cargarDocumentosGuardados()
 const elementosMarcados = new Set()
 let materiaDropProcesado = false
 const buscadorInput = document.getElementById("buscadorInput")
@@ -31,12 +33,43 @@ const inputNombreCarpeta = document.getElementById("inputNombreCarpeta")
 const modalCarpetaGuardar = document.getElementById("modalCarpetaGuardar")
 const modalConfiguracion = document.getElementById("modalConfiguracion")
 
+aplicarModoGuardado()
+
 function escaparComoHTML(texto) {
   if (texto === undefined || texto === null) return ""
   return String(texto)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
+}
+
+function cargarDocumentosGuardados() {
+  try {
+    const guardados = JSON.parse(localStorage.getItem(DOCUMENTOS_STORAGE_KEY) || "[]")
+    if (!Array.isArray(guardados)) return []
+
+    return guardados.map(doc => ({
+      id: doc.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      nombre: doc.nombre || "Documento",
+      extension: doc.extension || "",
+      url: doc.url || doc.dataUrl || "",
+      texto: doc.texto || "",
+      mensaje: doc.mensaje || ""
+    }))
+  } catch (e) {
+    console.error("No se pudieron leer los documentos guardados", e)
+    return []
+  }
+}
+
+function guardarDocumentos() {
+  localStorage.setItem(DOCUMENTOS_STORAGE_KEY, JSON.stringify(documentosCargados))
+}
+
+function aplicarModoGuardado() {
+  if (localStorage.getItem(MODO_OSCURO_STORAGE_KEY) === "true") {
+    document.body.classList.add("oscuro")
+  }
 }
 
 if (typeof pdfjsLib !== "undefined") {
@@ -253,6 +286,15 @@ function obtenerExtension(nombre = "") {
   return partes.length > 1 ? partes.pop().toLowerCase() : ""
 }
 
+function leerArchivoComoDataUrl(archivo) {
+  return new Promise((resolve, reject) => {
+    const lector = new FileReader()
+    lector.onload = () => resolve(typeof lector.result === "string" ? lector.result : "")
+    lector.onerror = () => reject(new Error("No se pudo leer el archivo"))
+    lector.readAsDataURL(archivo)
+  })
+}
+
 async function procesarDocumento(archivo) {
   const extension = obtenerExtension(archivo.name)
   const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`
@@ -266,26 +308,28 @@ async function procesarDocumento(archivo) {
   }
 
   try {
+    const dataUrl = await leerArchivoComoDataUrl(archivo)
+    base.url = dataUrl
+
     if (extension === "pdf") {
-      base.url = URL.createObjectURL(archivo)
       base.texto = await extraerTextoPdf(archivo)
     } else if (extension === "docx") {
       base.texto = await extraerTextoDocx(archivo)
     } else if (extension === "doc") {
       base.mensaje = "Vista previa limitada: descárgalo para abrirlo."
-      base.url = URL.createObjectURL(archivo)
     } else {
       base.mensaje = "Formato no soportado para vista previa."
-      base.url = URL.createObjectURL(archivo)
     }
 
     documentosCargados = [base, ...documentosCargados.filter(d => d.nombre !== base.nombre)]
+    guardarDocumentos()
     renderDocumentos()
     mostrarDocumento(base.id)
   } catch (err) {
     console.error("No se pudo procesar el documento", err)
     base.mensaje = "No se pudo leer el documento."
     documentosCargados = [base, ...documentosCargados]
+    guardarDocumentos()
     renderDocumentos()
     mostrarDocumento(base.id)
   }
@@ -429,6 +473,7 @@ function eliminarDocumento(id) {
     try { URL.revokeObjectURL(doc.url) } catch (e) { /* noop */ }
   }
 
+  guardarDocumentos()
   renderDocumentos()
   if (cambioCarpeta) ordenarYMostrar()
 
@@ -1595,7 +1640,8 @@ buscadorInput.addEventListener("keydown", e => {
 })
 
 function toggleModo() {
-  document.body.classList.toggle("oscuro")
+  const activo = document.body.classList.toggle("oscuro")
+  localStorage.setItem(MODO_OSCURO_STORAGE_KEY, activo ? "true" : "false")
 }
 
 function abrirModalConfiguracion() {
