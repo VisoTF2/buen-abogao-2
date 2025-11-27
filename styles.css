@@ -1187,6 +1187,52 @@ body.oscuro .modal-close:hover {
   border-radius: 8px;
   margin-top: 0;
 }
+
+.config-card {
+  width: min(520px, 92vw);
+}
+
+.configuracion-body {
+  gap: 14px;
+}
+
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--article-bg);
+}
+
+.config-section-head h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.config-section-head p {
+  margin: 2px 0 0;
+  color: var(--muted-text);
+  font-size: 13px;
+}
+
+.config-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.config-action {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 540px) {
+  .config-action {
+    width: auto;
+  }
+}
     .sidebarItem:hover {
       transform: scale(1.02);
       box-shadow: 0 4px 10px rgba(0,0,0,0.12);

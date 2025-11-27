@@ -29,6 +29,7 @@ const modalCarpeta = document.getElementById("modalCarpeta")
 const modalCarpetaTitulo = document.getElementById("modalCarpetaTitulo")
 const inputNombreCarpeta = document.getElementById("inputNombreCarpeta")
 const modalCarpetaGuardar = document.getElementById("modalCarpetaGuardar")
+const modalConfiguracion = document.getElementById("modalConfiguracion")
 
 function escaparComoHTML(texto) {
   if (texto === undefined || texto === null) return ""
@@ -87,6 +88,10 @@ if (botonDocumentos) {
     if (archivo) procesarDocumento(archivo)
   })
 }
+
+modalConfiguracion?.addEventListener("click", e => {
+  if (e.target === modalConfiguracion) cerrarModalConfiguracion()
+})
 
 function abrirSelectorBanner() {
   bannerInput?.click()
@@ -1494,11 +1499,24 @@ buscadorInput.addEventListener("keydown", e => {
   }
   if (e.key === "Escape") {
     cerrarBuscador()
+    cerrarModalConfiguracion()
   }
 })
 
 function toggleModo() {
   document.body.classList.toggle("oscuro")
+}
+
+function abrirModalConfiguracion() {
+  if (!modalConfiguracion) return
+  modalConfiguracion.classList.add("visible")
+  const primerBoton = modalConfiguracion.querySelector("button")
+  primerBoton?.focus()
+}
+
+function cerrarModalConfiguracion() {
+  if (!modalConfiguracion) return
+  modalConfiguracion.classList.remove("visible")
 }
 
 function cargarNormativa() {
