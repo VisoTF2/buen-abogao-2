@@ -159,14 +159,14 @@
 
     .banner-controls {
       display: inline-flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.78);
       border: 1px solid rgba(255, 255, 255, 0.45);
-      border-radius: 10px;
-      padding: 8px 10px;
+      border-radius: 9px;
+      padding: 6px 8px;
       backdrop-filter: blur(8px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.2);
       color: #f8fafc;
       margin-top: 2px;
     }
@@ -186,15 +186,15 @@
       font-size: 11px;
       color: #0f172a;
       background: #f8fafc;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 5px 11px;
+      border-radius: 7px;
       border: 1px solid rgba(15, 23, 42, 0.18);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       cursor: pointer;
       line-height: 1.1;
       white-space: nowrap;
-      min-width: 132px;
-      min-height: 32px;
+      min-width: 118px;
+      min-height: 30px;
     }
 
     .banner-upload input[type="file"] {
@@ -208,11 +208,11 @@
     }
 
     .banner-reset {
-      padding: 6px 12px;
+      padding: 5px 11px;
       background: #f8fafc;
       color: var(--accent);
       border: 1px solid rgba(255, 255, 255, 0.7);
-      border-radius: 8px;
+      border-radius: 7px;
       font-weight: 700;
       cursor: pointer;
       transition: 0.2s ease;
@@ -220,8 +220,8 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       font-size: 11px;
       line-height: 1.1;
-      min-height: 32px;
-      min-width: 132px;
+      min-height: 30px;
+      min-width: 118px;
     }
 
     .banner-reset:hover {
