@@ -25,7 +25,7 @@
       --search-highlight-mark: #dbeafe;
       --search-highlight-mark-active: #bfdbfe;
       --zoom-scale: 1;
-      --layout-max-width: 1400px;
+      --layout-max-width: 1450px;
       --layout-padding: 22px;
       --panel-min-height: clamp(440px, 68vh, 680px);
     }
@@ -115,6 +115,11 @@
     header.banner-con-imagen {
       color: #f8fafc;
       text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+      background-color: var(--accent);
+    }
+
+    body.oscuro header.banner-con-imagen {
+      background-color: var(--bg);
     }
 
     header::after {
@@ -190,8 +195,8 @@
       height: 32px;
     }
 
-    .container {
-  width: min(96vw, var(--layout-max-width));
+.container {
+  width: min(98vw, var(--layout-max-width));
   max-width: none;
   margin: 18px auto 26px;
   background: var(--card);
@@ -1186,6 +1191,52 @@ body.oscuro .modal-close:hover {
   font-size: 13px;
   border-radius: 8px;
   margin-top: 0;
+}
+
+.config-card {
+  width: min(520px, 92vw);
+}
+
+.configuracion-body {
+  gap: 14px;
+}
+
+.config-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--article-bg);
+}
+
+.config-section-head h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.config-section-head p {
+  margin: 2px 0 0;
+  color: var(--muted-text);
+  font-size: 13px;
+}
+
+.config-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.config-action {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (min-width: 540px) {
+  .config-action {
+    width: auto;
+  }
 }
     .sidebarItem:hover {
       transform: scale(1.02);

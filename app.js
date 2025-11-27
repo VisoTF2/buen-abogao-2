@@ -29,6 +29,7 @@ const modalCarpeta = document.getElementById("modalCarpeta")
 const modalCarpetaTitulo = document.getElementById("modalCarpetaTitulo")
 const inputNombreCarpeta = document.getElementById("inputNombreCarpeta")
 const modalCarpetaGuardar = document.getElementById("modalCarpetaGuardar")
+const modalConfiguracion = document.getElementById("modalConfiguracion")
 
 function escaparComoHTML(texto) {
   if (texto === undefined || texto === null) return ""
@@ -44,9 +45,10 @@ if (typeof pdfjsLib !== "undefined") {
 }
 
 const ZOOM_STEP = 0.05
-const MIN_ZOOM = 1.00
-const MAX_ZOOM = 1.35
-let zoomActual = 1
+const MIN_ZOOM = 1
+const MAX_ZOOM = 1.25
+const ZOOM_STORAGE_KEY = "appZoomScale"
+let zoomActual = obtenerZoomInicial()
 let pinchStartDistance = null
 let pinchStartZoom = 1
 let articuloArrastradoId = null
@@ -87,6 +89,10 @@ if (botonDocumentos) {
     if (archivo) procesarDocumento(archivo)
   })
 }
+
+modalConfiguracion?.addEventListener("click", e => {
+  if (e.target === modalConfiguracion) cerrarModalConfiguracion()
+})
 
 function abrirSelectorBanner() {
   bannerInput?.click()
@@ -645,10 +651,17 @@ function siguienteOrdenPara(normativa, materia) {
   return Math.max(...ordenes) + 1
 }
 
+function obtenerZoomInicial() {
+  const guardado = parseFloat(localStorage.getItem(ZOOM_STORAGE_KEY) || "")
+  if (!Number.isFinite(guardado)) return 1
+  return guardado
+}
+
 function aplicarZoom(nivel) {
   const limitado = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nivel))
   zoomActual = limitado
   document.documentElement.style.setProperty("--zoom-scale", limitado.toFixed(3))
+  localStorage.setItem(ZOOM_STORAGE_KEY, limitado.toFixed(3))
 }
 
 function distanciaEntreToques(touches) {
@@ -1494,11 +1507,24 @@ buscadorInput.addEventListener("keydown", e => {
   }
   if (e.key === "Escape") {
     cerrarBuscador()
+    cerrarModalConfiguracion()
   }
 })
 
 function toggleModo() {
   document.body.classList.toggle("oscuro")
+}
+
+function abrirModalConfiguracion() {
+  if (!modalConfiguracion) return
+  modalConfiguracion.classList.add("visible")
+  const primerBoton = modalConfiguracion.querySelector("button")
+  primerBoton?.focus()
+}
+
+function cerrarModalConfiguracion() {
+  if (!modalConfiguracion) return
+  modalConfiguracion.classList.remove("visible")
 }
 
 function cargarNormativa() {
