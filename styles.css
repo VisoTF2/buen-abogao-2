@@ -398,12 +398,6 @@
 
     .btn-note-delete:hover { background: #4b5563; }
 
-    .donaciones {
-      display: flex;
-      justify-content: center;
-      padding: 28px 0 18px;
-    }
-
     .documentos-panel {
       margin: 8px 0 0;
       padding: 14px 16px 22px;
