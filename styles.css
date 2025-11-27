@@ -401,7 +401,8 @@
     .donaciones {
       display: flex;
       justify-content: center;
-      padding: 28px 0 18px;
+      padding: 18px 0;
+      margin: 14px 0;
     }
 
     .documentos-panel {
