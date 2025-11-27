@@ -533,12 +533,19 @@
     .documento-info {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
       flex: 1;
       min-width: 0;
       justify-content: center;
     }
 
+    .documento-nombre-wrap {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .documento-nombre-text,
     .documento-nombre-input {
       font-size: 14px;
       color: var(--text);
@@ -546,26 +553,36 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 100%;
       width: 100%;
       box-sizing: border-box;
+      line-height: 1.45;
+    }
+
+    .documento-nombre-text {
+      padding: 6px 0;
+      border-radius: 6px;
+      cursor: text;
+      min-width: 0;
+      display: block;
+    }
+
+    .documento-nombre-text:focus {
+      outline: none;
+      box-shadow: inset 0 -1px 0 var(--accent-light);
+    }
+
+    .documento-nombre-input {
       border: 1px solid transparent;
       background: transparent;
-      border-radius: 8px;
-      padding: 7px 10px;
-      line-height: 1.35;
-      transition: border-color 0.15s ease, background-color 0.15s ease;
+      border-radius: 6px;
+      padding: 6px 2px;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
 
     .documento-nombre-input:focus {
       outline: none;
       border-color: var(--accent-light);
-      background: rgba(30, 58, 138, 0.06);
-      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
-    }
-
-    body.oscuro .documento-nombre-input:focus {
-      background: rgba(59, 130, 246, 0.12);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18);
     }
 
     .documento-item small {
