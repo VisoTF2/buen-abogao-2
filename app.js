@@ -377,14 +377,6 @@ function renderDocumentos() {
     const tipo = document.createElement("div")
     tipo.innerHTML = `<small>${doc.extension ? doc.extension.toUpperCase() : "Archivo"}</small>`
 
-    const carpetaDestino = carpetaDeDocumento(doc.id)
-    if (carpetaDestino) {
-      const carpetaTag = document.createElement("span")
-      carpetaTag.className = "documento-carpeta"
-      carpetaTag.textContent = carpetaDestino.nombre || "Carpeta"
-      tipo.appendChild(carpetaTag)
-    }
-
     info.appendChild(nombre)
     info.appendChild(tipo)
 

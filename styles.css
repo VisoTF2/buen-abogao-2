@@ -1114,18 +1114,6 @@
 .carpetaDocumentoQuitar:hover { background: rgba(239, 68, 68, 0.08); }
 .carpetaDocumentoQuitar:active { transform: translateY(1px); }
 
-.documento-carpeta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(59, 130, 246, 0.1);
-  color: var(--accent);
-  border-radius: 999px;
-  padding: 3px 10px;
-  margin-left: 6px;
-  font-weight: 700;
-}
-
 .documento-arrastrando {
   opacity: 0.6;
 }
