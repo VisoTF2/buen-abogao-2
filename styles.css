@@ -163,7 +163,19 @@
     .banner-upload {
       min-width: 130px;
       height: 32px;
+    }
+
+    .banner-actions {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       margin-top: 2px;
+    }
+
+    .banner-reset {
+      min-width: 130px;
+      height: 32px;
     }
 
     .container {

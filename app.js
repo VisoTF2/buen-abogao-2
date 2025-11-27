@@ -105,6 +105,12 @@ function aplicarBanner(src) {
 
 aplicarBanner(localStorage.getItem(BANNER_STORAGE_KEY) || "")
 
+function restablecerBanner() {
+  aplicarBanner("")
+  localStorage.removeItem(BANNER_STORAGE_KEY)
+  if (bannerInput) bannerInput.value = ""
+}
+
 bannerInput?.addEventListener("change", e => {
   const archivo = e.target.files?.[0]
   if (!archivo) return

@@ -16,7 +16,10 @@
       <h1 class="app-title">Buen abogao</h1>
       <button class="modo" onclick="toggleModo()">Modo oscuro</button>
       <input type="file" id="bannerInput" accept="image/*" hidden>
-      <button class="modo banner-upload" type="button" onclick="abrirSelectorBanner()">Cambiar banner</button>
+      <div class="banner-actions">
+        <button class="modo banner-upload" type="button" onclick="abrirSelectorBanner()">Cambiar banner</button>
+        <button class="modo banner-reset" type="button" onclick="restablecerBanner()">Restablecer</button>
+      </div>
     </div>
   </header>
 
