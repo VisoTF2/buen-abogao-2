@@ -115,6 +115,10 @@
     header.banner-con-imagen {
       color: #f8fafc;
       text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+      background-color: var(--accent);
+    }
+
+    body.oscuro header.banner-con-imagen {
       background-color: var(--bg);
     }
 
