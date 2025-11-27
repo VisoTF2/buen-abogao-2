@@ -1041,6 +1041,95 @@
   display: none;
 }
 
+.carpetaBox.carpeta-colapsada .carpetaDocumentos,
+.carpetaBox.carpeta-colapsada .carpetaDocumentosTitulo {
+  display: none;
+}
+
+.carpetaDocumentosTitulo {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--accent);
+  margin: 8px 4px 4px;
+}
+
+.carpetaDocumentos {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.carpetaDocumentos.drop-activa {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.08);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.carpetaDocumentosVacio {
+  font-size: 13px;
+  color: #6b7280;
+  text-align: center;
+}
+
+.carpetaDocumentosLista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.carpetaDocumentoChip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  background: var(--article-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.carpetaDocumentoDetalle {
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.carpetaDocumentoQuitar {
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: #ef4444;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s ease, transform 0.12s ease;
+  flex-shrink: 0;
+}
+
+.carpetaDocumentoQuitar:hover { background: rgba(239, 68, 68, 0.08); }
+.carpetaDocumentoQuitar:active { transform: translateY(1px); }
+
+.documento-carpeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 3px 10px;
+  margin-left: 6px;
+  font-weight: 700;
+}
+
+.documento-arrastrando {
+  opacity: 0.6;
+}
+
 .carpetaLista-drop {
   box-shadow: inset 0 0 0 2px var(--accent);
   background: rgba(59, 130, 246, 0.08);

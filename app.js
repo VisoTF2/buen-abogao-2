@@ -4,7 +4,7 @@ let articulos = JSON.parse(localStorage.getItem("articulosGuardados") || "[]")
   .map(a => ({ ...a, contenidoHTML: a.contenidoHTML ?? null }))
 let materiasOrden = JSON.parse(localStorage.getItem("materiasOrden") || "{}")
 let carpetas = JSON.parse(localStorage.getItem("carpetasMaterias") || "[]").map(
-  c => ({ ...c, color: c.color || "#1e3a8a" })
+  c => ({ ...c, color: c.color || "#1e3a8a", documentos: c.documentos || [] })
 )
 let normativaSeleccionada = null
 let materiaSeleccionada = null
@@ -56,6 +56,7 @@ let materiaArrastrada = null
 let materiaArrastradaNormativa = null
 let materiaArrastradaCarpetaId = null
 let carpetaEnEdicionId = null
+let documentoArrastradoId = null
 
 documentoInput?.addEventListener("change", e => {
   const archivo = e.target.files?.[0]
@@ -364,6 +365,8 @@ function renderDocumentos() {
   documentosCargados.forEach(doc => {
     const item = document.createElement("div")
     item.className = "documento-item"
+    item.draggable = true
+    item.dataset.documentoId = doc.id
 
     const info = document.createElement("div")
     info.className = "documento-info"
@@ -373,6 +376,14 @@ function renderDocumentos() {
 
     const tipo = document.createElement("div")
     tipo.innerHTML = `<small>${doc.extension ? doc.extension.toUpperCase() : "Archivo"}</small>`
+
+    const carpetaDestino = carpetaDeDocumento(doc.id)
+    if (carpetaDestino) {
+      const carpetaTag = document.createElement("span")
+      carpetaTag.className = "documento-carpeta"
+      carpetaTag.textContent = carpetaDestino.nombre || "Carpeta"
+      tipo.appendChild(carpetaTag)
+    }
 
     info.appendChild(nombre)
     info.appendChild(tipo)
@@ -397,6 +408,21 @@ function renderDocumentos() {
 
     item.appendChild(info)
     item.appendChild(acciones)
+    item.addEventListener("dragstart", e => {
+      documentoArrastradoId = doc.id
+      item.classList.add("documento-arrastrando")
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = "move"
+        e.dataTransfer.setData("text/plain", doc.nombre)
+      }
+    })
+    item.addEventListener("dragend", () => {
+      documentoArrastradoId = null
+      item.classList.remove("documento-arrastrando")
+      document
+        .querySelectorAll(".carpetaDocumentos")
+        .forEach(z => z.classList.remove("drop-activa"))
+    })
     listaDocumentos.appendChild(item)
   })
 }
@@ -405,11 +431,14 @@ function eliminarDocumento(id) {
   const doc = documentosCargados.find(d => d.id === id)
   documentosCargados = documentosCargados.filter(d => d.id !== id)
 
+  const cambioCarpeta = removerDocumentoDeCarpetas(id)
+
   if (doc?.url) {
     try { URL.revokeObjectURL(doc.url) } catch (e) { /* noop */ }
   }
 
   renderDocumentos()
+  if (cambioCarpeta) ordenarYMostrar()
 
   const vistaActual = visorDocumentos?.querySelector("h4")?.textContent
   if (doc && vistaActual === doc.nombre) {
@@ -547,11 +576,29 @@ function guardarCarpetas() {
   localStorage.setItem("carpetasMaterias", JSON.stringify(carpetas))
 }
 
+function carpetaDeDocumento(documentoId) {
+  return carpetas.find(carpeta => carpeta.documentos?.includes(documentoId)) || null
+}
+
 function materiaEnCarpeta(normativa, materia) {
   const carpeta = carpetas.find(c =>
     c.materias?.some(m => m.materia === materia && m.normativa === normativa)
   )
   return carpeta ? carpeta.id : null
+}
+
+function removerDocumentoDeCarpetas(documentoId, carpetaId = null) {
+  let cambio = false
+
+  carpetas = carpetas.map(carpeta => {
+    if (carpetaId && carpeta.id !== carpetaId) return carpeta
+    const documentos = (carpeta.documentos || []).filter(id => id !== documentoId)
+    if (documentos.length !== (carpeta.documentos || []).length) cambio = true
+    return { ...carpeta, documentos }
+  })
+
+  if (cambio) guardarCarpetas()
+  return cambio
 }
 
 function removerMateriaDeCarpetas(normativa, materia) {
@@ -610,6 +657,22 @@ function moverMateriaACarpeta(normativa, materia, carpetaId) {
   })
   guardarCarpetas()
   ordenarYMostrar()
+}
+
+function moverDocumentoACarpeta(documentoId, carpetaId) {
+  if (!carpetaId || !documentoId) return
+  removerDocumentoDeCarpetas(documentoId)
+
+  carpetas = carpetas.map(carpeta => {
+    if (carpeta.id !== carpetaId) return carpeta
+    const documentos = new Set(carpeta.documentos || [])
+    documentos.add(documentoId)
+    return { ...carpeta, documentos: Array.from(documentos) }
+  })
+
+  guardarCarpetas()
+  ordenarYMostrar()
+  renderDocumentos()
 }
 
 function moverMateriaAFueraDeCarpeta(materia, normativa) {
@@ -1034,6 +1097,34 @@ function prepararListaMaterias(lista) {
     lista.classList.remove("drop-activa", "carpetaLista-drop")
   })
   lista.addEventListener("drop", manejarDropListaMaterias)
+}
+
+function prepararZonaDocumentosCarpeta(zona, carpetaId) {
+  if (!zona) return
+
+  zona.addEventListener("dragover", e => {
+    if (!documentoArrastradoId) return
+    e.preventDefault()
+    zona.classList.add("drop-activa")
+    if (e.dataTransfer) e.dataTransfer.dropEffect = "move"
+  })
+
+  zona.addEventListener("dragenter", () => {
+    if (!documentoArrastradoId) return
+    zona.classList.add("drop-activa")
+  })
+
+  zona.addEventListener("dragleave", () => {
+    zona.classList.remove("drop-activa")
+  })
+
+  zona.addEventListener("drop", e => {
+    if (!documentoArrastradoId) return
+    e.preventDefault()
+    zona.classList.remove("drop-activa")
+    moverDocumentoACarpeta(documentoArrastradoId, carpetaId)
+    documentoArrastradoId = null
+  })
 }
 
 function activarArrastreMateria(item, lista, normativa) {
@@ -1872,6 +1963,59 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
     }
 
     card.appendChild(lista)
+
+    const documentosTitulo = document.createElement("div")
+    documentosTitulo.className = "carpetaDocumentosTitulo"
+    documentosTitulo.textContent = "Documentos"
+
+    const zonaDocumentos = document.createElement("div")
+    zonaDocumentos.className = "carpetaDocumentos"
+    zonaDocumentos.dataset.carpetaId = carpeta.id
+    prepararZonaDocumentosCarpeta(zonaDocumentos, carpeta.id)
+
+    const documentosEnCarpeta = (carpeta.documentos || [])
+      .map(id => documentosCargados.find(d => d.id === id))
+      .filter(Boolean)
+
+    if (!documentosEnCarpeta.length) {
+      const avisoDocs = document.createElement("div")
+      avisoDocs.className = "carpetaDocumentosVacio"
+      avisoDocs.textContent = "Arrastra documentos aquí"
+      zonaDocumentos.appendChild(avisoDocs)
+    } else {
+      const listaDocs = document.createElement("div")
+      listaDocs.className = "carpetaDocumentosLista"
+
+      documentosEnCarpeta.forEach(doc => {
+        const chip = document.createElement("div")
+        chip.className = "carpetaDocumentoChip"
+
+        const detalle = document.createElement("div")
+        detalle.className = "carpetaDocumentoDetalle"
+        detalle.textContent = doc.nombre
+
+        const quitar = document.createElement("button")
+        quitar.type = "button"
+        quitar.className = "carpetaDocumentoQuitar"
+        quitar.textContent = "Quitar"
+        quitar.addEventListener("click", () => {
+          const cambio = removerDocumentoDeCarpetas(doc.id, carpeta.id)
+          if (cambio) {
+            ordenarYMostrar()
+            renderDocumentos()
+          }
+        })
+
+        chip.appendChild(detalle)
+        chip.appendChild(quitar)
+        listaDocs.appendChild(chip)
+      })
+
+      zonaDocumentos.appendChild(listaDocs)
+    }
+
+    card.appendChild(documentosTitulo)
+    card.appendChild(zonaDocumentos)
     contenedor.appendChild(card)
   })
 }
