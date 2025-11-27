@@ -389,7 +389,7 @@
     .donaciones {
       display: flex;
       justify-content: center;
-      padding: 20px 0 10px;
+      padding: 28px 0 18px;
     }
 
     .documentos-panel {
@@ -526,14 +526,30 @@
       min-width: 0;
     }
 
-    .documento-item strong {
+    .documento-nombre-input {
       font-size: 14px;
       color: var(--text);
+      font-weight: 700;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      display: block;
       max-width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      border-radius: 8px;
+      padding: 5px 8px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .documento-nombre-input:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      background: rgba(30, 58, 138, 0.06);
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+    }
+
+    body.oscuro .documento-nombre-input:focus {
+      background: rgba(59, 130, 246, 0.12);
     }
 
     .documento-item small {
@@ -607,13 +623,51 @@
       min-width: 0;
     }
 
-.documentos-preview h4 {
-  margin: 0;
-  font-size: 15px;
-  color: var(--accent);
-  display: flex;
+    .documentos-preview h4 {
+      margin: 0;
+      font-size: 15px;
+      color: var(--accent);
+      display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .documento-preview-titulo {
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .documento-preview-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .documento-preview-cerrar {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      line-height: 1;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .documento-preview-cerrar:hover {
+      background: rgba(30, 58, 138, 0.08);
+      border-color: var(--accent-light);
+    }
+
+    body.oscuro .documento-preview-cerrar {
+      background: #0f172a;
+      color: #e5e7eb;
     }
 
     .documentos-vacio {

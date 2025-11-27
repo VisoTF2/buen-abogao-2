@@ -415,8 +415,20 @@ function renderDocumentos() {
     const info = document.createElement("div")
     info.className = "documento-info"
 
-    const nombre = document.createElement("strong")
-    nombre.textContent = doc.nombre
+    const nombre = document.createElement("input")
+    nombre.type = "text"
+    nombre.className = "documento-nombre-input"
+    nombre.value = doc.nombre
+    nombre.placeholder = "Nombre del documento"
+    nombre.addEventListener("input", () => actualizarNombreDocumento(doc.id, nombre.value))
+    nombre.addEventListener("blur", () => normalizarNombreDocumento(doc.id, nombre))
+    nombre.addEventListener("mousedown", e => e.stopPropagation())
+    nombre.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        nombre.blur()
+      }
+    })
 
     const tipo = document.createElement("div")
     tipo.innerHTML = `<small>${doc.extension ? doc.extension.toUpperCase() : "Archivo"}</small>`
@@ -431,7 +443,7 @@ function renderDocumentos() {
     ver.className = "documento-ver"
     ver.type = "button"
     ver.textContent = "Ver"
-    ver.addEventListener("click", () => mostrarDocumento(doc.id))
+    ver.addEventListener("click", () => alternarDocumento(doc.id))
 
     const eliminar = document.createElement("button")
     eliminar.className = "documento-eliminar"
@@ -461,6 +473,8 @@ function renderDocumentos() {
     })
     listaDocumentos.appendChild(item)
   })
+
+  actualizarBotonesVer()
 }
 
 function eliminarDocumento(id) {
@@ -477,8 +491,8 @@ function eliminarDocumento(id) {
   renderDocumentos()
   if (cambioCarpeta) ordenarYMostrar()
 
-  const vistaActual = visorDocumentos?.querySelector("h4")?.textContent
-  if (doc && vistaActual === doc.nombre) {
+  const vistaActualId = visorDocumentos?.dataset.docActual
+  if (doc && vistaActualId === doc.id) {
     mostrarDocumento(documentosCargados[0]?.id)
   }
 }
@@ -487,20 +501,16 @@ function mostrarDocumento(id, terminoBusqueda = "", indiceCoincidencia = null) {
   if (!visorDocumentos) return
 
   const doc = documentosCargados.find(d => d.id === id)
-  visorDocumentos.innerHTML = ""
-  visorDocumentos.dataset.docActual = doc?.id || ""
-
-  const titulo = document.createElement("h4")
-  titulo.textContent = doc ? doc.nombre : "Vista previa"
-  visorDocumentos.appendChild(titulo)
 
   if (!doc) {
-    const vacio = document.createElement("div")
-    vacio.className = "documentos-vacio"
-    vacio.textContent = "Selecciona un documento para verlo aquí."
-    visorDocumentos.appendChild(vacio)
+    cerrarVistaDocumento()
     return
   }
+
+  visorDocumentos.innerHTML = ""
+  visorDocumentos.dataset.docActual = doc.id
+
+  visorDocumentos.appendChild(construirEncabezadoVista(doc))
 
   if ((doc.extension === "pdf" || doc.extension === "docx") && doc.texto) {
     const texto = document.createElement("div")
@@ -523,6 +533,7 @@ function mostrarDocumento(id, terminoBusqueda = "", indiceCoincidencia = null) {
   if (doc.url) {
     const descarga = document.createElement("a")
     descarga.href = doc.url
+    descarga.className = "documento-descarga"
     descarga.download = doc.nombre
     descarga.textContent = "Descargar original"
     descarga.style.fontWeight = "700"
@@ -531,6 +542,102 @@ function mostrarDocumento(id, terminoBusqueda = "", indiceCoincidencia = null) {
     descarga.style.marginTop = "6px"
     visorDocumentos.appendChild(descarga)
   }
+
+  actualizarBotonesVer()
+}
+
+function construirEncabezadoVista(doc) {
+  const encabezado = document.createElement("div")
+  encabezado.className = "documento-preview-head"
+
+  const titulo = document.createElement("h4")
+  titulo.className = "documento-preview-titulo"
+  titulo.textContent = doc ? doc.nombre : "Vista previa"
+  encabezado.appendChild(titulo)
+
+  if (doc) {
+    const cerrar = document.createElement("button")
+    cerrar.type = "button"
+    cerrar.className = "documento-preview-cerrar"
+    cerrar.textContent = "✕"
+    cerrar.setAttribute("aria-label", "Cerrar vista previa")
+    cerrar.addEventListener("click", cerrarVistaDocumento)
+    encabezado.appendChild(cerrar)
+  }
+
+  return encabezado
+}
+
+function cerrarVistaDocumento() {
+  if (!visorDocumentos) return
+
+  visorDocumentos.dataset.docActual = ""
+  visorDocumentos.innerHTML = ""
+  visorDocumentos.appendChild(construirEncabezadoVista(null))
+
+  const vacio = document.createElement("div")
+  vacio.className = "documentos-vacio"
+  vacio.textContent = "Selecciona un documento para verlo aquí mismo."
+  visorDocumentos.appendChild(vacio)
+
+  actualizarBotonesVer()
+}
+
+function alternarDocumento(id) {
+  if (visorDocumentos?.dataset.docActual === id) {
+    cerrarVistaDocumento()
+  } else {
+    mostrarDocumento(id)
+  }
+}
+
+function actualizarBotonesVer() {
+  const actual = visorDocumentos?.dataset.docActual || ""
+
+  document.querySelectorAll(".documento-ver").forEach(btn => {
+    const item = btn.closest(".documento-item")
+    const id = item?.dataset.documentoId
+
+    if (id && id === actual) {
+      btn.textContent = "Cerrar"
+      btn.setAttribute("aria-pressed", "true")
+    } else {
+      btn.textContent = "Ver"
+      btn.setAttribute("aria-pressed", "false")
+    }
+  })
+}
+
+function actualizarNombreDocumento(id, nuevoNombre) {
+  const doc = documentosCargados.find(d => d.id === id)
+  if (!doc) return
+
+  doc.nombre = nuevoNombre
+  guardarDocumentos()
+  actualizarNombreDocumentoEnCarpetas(id, nuevoNombre)
+
+  if (visorDocumentos?.dataset.docActual === id) {
+    const titulo = visorDocumentos.querySelector(".documento-preview-titulo")
+    if (titulo) titulo.textContent = nuevoNombre || "Vista previa"
+    const descarga = visorDocumentos.querySelector(".documento-descarga")
+    if (descarga) descarga.download = nuevoNombre
+  }
+}
+
+function normalizarNombreDocumento(id, input) {
+  const valor = (input?.value || "").trim()
+  const nombreFinal = valor || "Documento"
+
+  if (input) input.value = nombreFinal
+  actualizarNombreDocumento(id, nombreFinal)
+}
+
+function actualizarNombreDocumentoEnCarpetas(id, nombre) {
+  document
+    .querySelectorAll(`.carpetaDocumentoDetalle[data-doc-id="${id}"]`)
+    .forEach(detalle => {
+      detalle.textContent = nombre || "Documento"
+    })
 }
 
 function aplicarResaltadoEnTexto(textoFuente, contenedor, termino, indiceActivo) {
@@ -2030,6 +2137,7 @@ function renderizarCarpetasSidebar(contenedor, agrupado, sidebar) {
 
         const detalle = document.createElement("div")
         detalle.className = "carpetaDocumentoDetalle"
+        detalle.dataset.docId = doc.id
         detalle.textContent = doc.nombre
 
         const quitar = document.createElement("button")
