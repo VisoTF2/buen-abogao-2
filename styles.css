@@ -8,6 +8,9 @@
       --border: #d1d5db;
       --accent: #1e3a8a;
       --accent-light: #3b5ccc;
+      --modo-bg: #1e3a8a;
+      --modo-text: #ffffff;
+      --modo-border: #1e3a8a;
       --article-bg: #f8fafc;
       --muted-text: #6b7280;
       --focus-contrast: #000;
@@ -34,6 +37,9 @@
       --border: #30363d;
       --accent: #3b82f6;
       --accent-light: #60a5fa;
+      --modo-bg: #3a3f46;
+      --modo-text: #ffffff;
+      --modo-border: #3a3f46;
       --article-bg: #1c2128;
       --muted-text: #9ca3af;
       --focus-contrast: #fff;
@@ -133,27 +139,25 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: var(--card);
-      color: var(--accent);
-      border-radius: 6px;
-      padding: 4px 10px;
+      background: var(--modo-bg);
+      color: var(--modo-text);
+      border-radius: 999px;
+      padding: 8px 16px;
       font-weight: 700;
-      font-size: 11px;
-      border: 1px solid var(--border);
+      font-size: 13px;
+      border: 1px solid var(--modo-border);
       cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
-      line-height: 1.15;
-      min-height: 28px;
-      height: 28px;
-      min-width: 120px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      line-height: 1.1;
+      min-height: 32px;
+      height: 32px;
+      min-width: 130px;
     }
 
-    body.oscuro .modo {
-      background: var(--card);
-      color: var(--accent-light);
-      border-color: var(--border);
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    .modo:hover {
+      transform: translateY(-0.5px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.26);
     }
 
     .container {
