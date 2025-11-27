@@ -130,20 +130,29 @@
     }
 
     .modo {
-      background: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
       color: var(--accent);
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-weight: bold;
-      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-weight: 700;
+      font-size: 11px;
+      border: 1px solid rgba(15, 23, 42, 0.18);
       cursor: pointer;
       transition: 0.2s;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.16);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+      line-height: 1.15;
+      min-height: 28px;
+      height: 28px;
+      min-width: 120px;
     }
 
     body.oscuro .modo {
-      background: #30363d;
-      color: white;
+      background: #f1f5f9;
+      color: #111622;
+      border-color: rgba(17, 22, 34, 0.16);
     }
 
     .container {
