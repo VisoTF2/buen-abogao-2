@@ -14,14 +14,8 @@ let ultimoTerminoBusqueda = ""
 let documentosCargados = []
 const elementosMarcados = new Set()
 let materiaDropProcesado = false
-const BANNER_STORAGE_KEY = "configBanner"
-let bannerConfig = { image: "", imageName: "" }
 const buscadorInput = document.getElementById("buscadorInput")
 const appRoot = document.getElementById("appRoot")
-const appBanner = document.getElementById("appBanner")
-const bannerImageInput = document.getElementById("bannerImageInput")
-const bannerImageName = document.getElementById("bannerImageName")
-const bannerResetBtn = document.getElementById("bannerReset")
 const documentoInput = document.getElementById("documentoInput")
 const listaDocumentos = document.getElementById("listaDocumentos")
 const visorDocumentos = document.getElementById("visorDocumentos")
@@ -42,89 +36,6 @@ function escaparComoHTML(texto) {
 if (typeof pdfjsLib !== "undefined") {
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"
-}
-
-function obtenerColorBaseBanner() {
-  const colorVar = getComputedStyle(document.documentElement)
-    .getPropertyValue("--accent")
-    .trim()
-  return colorVar || "#1e3a8a"
-}
-
-function actualizarNombreArchivoBanner(nombre = "") {
-  if (!bannerImageName) return
-  bannerImageName.textContent = nombre || "Sin imagen seleccionada"
-}
-
-function aplicarBannerPersonalizado() {
-  if (!appBanner) return
-
-  const colorBase = obtenerColorBaseBanner()
-  const capas = bannerConfig.image
-    ? [
-        "linear-gradient(180deg, rgba(0,0,0,0.38), rgba(0,0,0,0.26))",
-        `url(${bannerConfig.image})`
-      ]
-    : [`linear-gradient(135deg, ${colorBase}, ${colorBase})`]
-
-  appBanner.style.backgroundColor = colorBase
-  appBanner.style.backgroundImage = capas.join(", ")
-  appBanner.classList.toggle("banner-con-imagen", Boolean(bannerConfig.image))
-}
-
-function guardarBannerConfig() {
-  localStorage.setItem(BANNER_STORAGE_KEY, JSON.stringify(bannerConfig))
-  aplicarBannerPersonalizado()
-}
-
-function manejarCambioImagenBanner(e) {
-  const archivo = e.target.files?.[0]
-  if (!archivo) {
-    actualizarNombreArchivoBanner()
-    return
-  }
-
-  const lector = new FileReader()
-  lector.onload = ev => {
-    bannerConfig.image = ev.target?.result || ""
-    bannerConfig.imageName = archivo.name
-    guardarBannerConfig()
-    actualizarNombreArchivoBanner(archivo.name)
-  }
-  lector.readAsDataURL(archivo)
-}
-
-function inicializarBannerPersonalizado() {
-  const guardado = localStorage.getItem(BANNER_STORAGE_KEY)
-  if (guardado) {
-    try {
-      const parsed = JSON.parse(guardado)
-      bannerConfig = {
-        image: parsed.image || "",
-        imageName: parsed.imageName || ""
-      }
-    } catch (_) {
-      bannerConfig = { image: "", imageName: "" }
-    }
-  } else {
-    bannerConfig = { image: "", imageName: "" }
-  }
-
-  if (bannerImageInput) {
-    bannerImageInput.addEventListener("change", manejarCambioImagenBanner)
-  }
-
-  if (bannerResetBtn) {
-    bannerResetBtn.addEventListener("click", () => {
-      bannerConfig = { image: "", imageName: "" }
-      if (bannerImageInput) bannerImageInput.value = ""
-      actualizarNombreArchivoBanner()
-      guardarBannerConfig()
-    })
-  }
-
-  actualizarNombreArchivoBanner(bannerConfig.imageName)
-  aplicarBannerPersonalizado()
 }
 
 const ZOOM_STEP = 0.05
@@ -171,8 +82,6 @@ if (botonDocumentos) {
     if (archivo) procesarDocumento(archivo)
   })
 }
-
-inicializarBannerPersonalizado()
 
 function manejarReordenArticulos(e) {
   if (!articuloArrastradoId) return
