@@ -87,7 +87,20 @@
     .app-root {
       min-height: 100vh;
       touch-action: pan-y;
-      padding-bottom: 32px;
+      padding-bottom: 96px;
+    }
+
+    .donation-footer {
+      position: fixed;
+      inset: auto 0 16px;
+      display: flex;
+      justify-content: center;
+      z-index: 1200;
+      pointer-events: none;
+    }
+
+    .donation-footer > * {
+      pointer-events: auto;
     }
 
     .container {
