@@ -152,15 +152,11 @@
     }
 
     .donation-footer {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
       display: flex;
       justify-content: center;
-      padding: 12px 0;
+      padding: 18px 0 24px;
+      margin-top: 28px;
       pointer-events: none;
-      z-index: 30;
     }
 
     .donation-button {
