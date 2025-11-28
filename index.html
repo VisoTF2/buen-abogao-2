@@ -106,7 +106,7 @@
 
         <div class="contenidoArticulos" id="contenidoArticulos"></div>
 
-        <div class="documentos-panel">
+      <div class="documentos-panel">
           <div class="documentos-head">
             <div class="documentos-title">
               <h3>Subir documentos</h3>
@@ -137,73 +137,8 @@
           </div>
         </div>
       </div>
-  </div>
-
-  </div>
-
-  </div>
-
-  </div>
-
-  <div class="modal-backdrop" id="modalCarpeta" role="dialog" aria-modal="true">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 id="modalCarpetaTitulo">Nueva carpeta</h3>
-        <button class="modal-close" type="button" aria-label="Cerrar" onclick="cerrarModalCarpeta()">✕</button>
-      </div>
-
-      <div class="modal-body">
-        <label for="inputNombreCarpeta">Nombre</label>
-        <input type="text" id="inputNombreCarpeta" placeholder="Ejemplo: Culpabilidad">
-      </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn-primary" id="modalCarpetaGuardar">Guardar carpeta</button>
-      </div>
     </div>
   </div>
-
-  <div class="modal-backdrop" id="modalConfiguracion" role="dialog" aria-modal="true">
-    <div class="modal-card config-card">
-      <div class="modal-head">
-        <h3>Configuración</h3>
-        <button class="modal-close" type="button" aria-label="Cerrar" onclick="cerrarModalConfiguracion()">✕</button>
-      </div>
-
-      <div class="modal-body configuracion-body">
-        <section class="config-section">
-          <div class="config-section-head">
-            <h4>Tema</h4>
-            <p>Alterna entre el modo claro y oscuro.</p>
-          </div>
-          <button class="modo config-action" type="button" onclick="toggleModo()">Modo oscuro</button>
-        </section>
-
-        <section class="config-section">
-          <div class="config-section-head">
-            <h4>Banner</h4>
-            <p>Personaliza la imagen superior o vuelve al estado original.</p>
-          </div>
-          <input type="file" id="bannerInput" accept="image/*" hidden>
-          <div class="config-actions">
-            <button class="modo banner-upload config-action" type="button" onclick="abrirSelectorBanner()">Cambiar banner</button>
-            <button class="modo banner-reset config-action" type="button" onclick="restablecerBanner()">Restablecer banner</button>
-          </div>
-        </section>
-
-        <section class="config-section">
-          <div class="config-section-head">
-            <h4>Fondo</h4>
-            <p>Elige una imagen de fondo o quítala por completo.</p>
-          </div>
-          <input type="file" id="fondoInput" accept="image/*" hidden>
-          <div class="config-actions">
-            <button class="modo banner-upload config-action" type="button" onclick="abrirSelectorFondo()">Cambiar fondo</button>
-            <button class="modo banner-reset config-action" type="button" onclick="restablecerFondo()">Restablecer fondo</button>
-          </div>
-        </section>
-      </div>
-    </div>
   </div>
 
   <div class="donation-footer">
@@ -221,6 +156,68 @@
       data-tecito-color="#FFF"
     ></script>
   </div>
+</div>
+
+<div class="modal-backdrop" id="modalCarpeta" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="modalCarpetaTitulo">Nueva carpeta</h3>
+      <button class="modal-close" type="button" aria-label="Cerrar" onclick="cerrarModalCarpeta()">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <label for="inputNombreCarpeta">Nombre</label>
+      <input type="text" id="inputNombreCarpeta" placeholder="Ejemplo: Culpabilidad">
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="modalCarpetaGuardar">Guardar carpeta</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalConfiguracion" role="dialog" aria-modal="true">
+  <div class="modal-card config-card">
+    <div class="modal-head">
+      <h3>Configuración</h3>
+      <button class="modal-close" type="button" aria-label="Cerrar" onclick="cerrarModalConfiguracion()">✕</button>
+    </div>
+
+    <div class="modal-body configuracion-body">
+      <section class="config-section">
+        <div class="config-section-head">
+          <h4>Tema</h4>
+          <p>Alterna entre el modo claro y oscuro.</p>
+        </div>
+        <button class="modo config-action" type="button" onclick="toggleModo()">Modo oscuro</button>
+      </section>
+
+      <section class="config-section">
+        <div class="config-section-head">
+          <h4>Banner</h4>
+          <p>Personaliza la imagen superior o vuelve al estado original.</p>
+        </div>
+        <input type="file" id="bannerInput" accept="image/*" hidden>
+        <div class="config-actions">
+          <button class="modo banner-upload config-action" type="button" onclick="abrirSelectorBanner()">Cambiar banner</button>
+          <button class="modo banner-reset config-action" type="button" onclick="restablecerBanner()">Restablecer banner</button>
+        </div>
+      </section>
+
+      <section class="config-section">
+        <div class="config-section-head">
+          <h4>Fondo</h4>
+          <p>Elige una imagen de fondo o quítala por completo.</p>
+        </div>
+        <input type="file" id="fondoInput" accept="image/*" hidden>
+        <div class="config-actions">
+          <button class="modo banner-upload config-action" type="button" onclick="abrirSelectorFondo()">Cambiar fondo</button>
+          <button class="modo banner-reset config-action" type="button" onclick="restablecerFondo()">Restablecer fondo</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
