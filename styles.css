@@ -87,7 +87,7 @@
     .app-root {
       min-height: 100vh;
       touch-action: pan-y;
-      padding-bottom: 120px;
+      padding-bottom: 32px;
     }
 
     .container {
@@ -152,41 +152,6 @@
       gap: 6px;
     }
 
-    .donation-footer {
-      position: fixed;
-      inset-block-end: calc(12px + env(safe-area-inset-bottom));
-      inset-inline-start: 0;
-      inset-inline-end: 0;
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      max-width: none;
-      pointer-events: none;
-      z-index: 10;
-      background: none;
-    }
-
-    .donation-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 42px;
-      pointer-events: auto;
-      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
-      transform: none;
-    }
-
-    .donation-button .bmc-button {
-      box-shadow: 0 8px 22px rgba(17, 24, 39, 0.2) !important;
-      border-radius: 999px !important;
-      padding: 14px 18px !important;
-    }
-
-    .donation-button .bmc-button img,
-    .donation-button .bmc-button svg {
-      height: 20px !important;
-      width: 20px !important;
-    }
 
     .app-title {
       margin: 0;
