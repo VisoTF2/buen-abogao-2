@@ -151,34 +151,33 @@
       gap: 6px;
     }
 
-    .banner-actions {
+    .donation-footer {
+      position: fixed;
+      bottom: 16px;
+      left: 0;
+      right: 0;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
-      align-items: center;
-      margin-top: 2px;
+      pointer-events: none;
+      z-index: 30;
     }
 
-.donation-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 32px;
-}
+    .donation-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      transform: scale(0.82);
+      transform-origin: center;
+      pointer-events: auto;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.2));
+    }
 
-.donation-button .bmc-button {
-  height: 38px !important;
-  font-size: 15px !important;
-  padding: 8px 14px !important;
-  gap: 8px !important;
-}
-
-.donation-button .bmc-button img,
-.donation-button .bmc-button svg {
-  height: 20px !important;
-  width: 20px !important;
-}
+    .donation-button .bmc-button img,
+    .donation-button .bmc-button svg {
+      height: 18px !important;
+      width: 18px !important;
+    }
 
     .app-title {
       margin: 0;
