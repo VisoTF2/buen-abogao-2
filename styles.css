@@ -160,12 +160,25 @@
       margin-top: 2px;
     }
 
-    .donation-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 32px;
-    }
+.donation-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.donation-button .bmc-button {
+  height: 38px !important;
+  font-size: 15px !important;
+  padding: 8px 14px !important;
+  gap: 8px !important;
+}
+
+.donation-button .bmc-button img,
+.donation-button .bmc-button svg {
+  height: 20px !important;
+  width: 20px !important;
+}
 
     .app-title {
       margin: 0;
